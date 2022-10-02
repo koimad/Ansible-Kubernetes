@@ -1,0 +1,29 @@
+---
+- hosts: all
+  become: yes
+  roles:
+  #  - role: pre-setup
+  #  - role: swapfile
+  #  - role: selinux
+  #  - role: configure-network
+  #  - role: firewallstate
+  #    firewall_service_state: "disable"
+  #  - role: firewallstate
+  #    firewall_service_state: "enable"  
+  #  - role: crio
+  #  - role: install-k8s
+
+- hosts: masters
+  become: yes
+  roles:
+   - role: configure-firewall
+     fire_wall_ports: "{{ master_firewall_ports }}"
+   - role: master-nodes
+   
+
+# - hosts: workers
+#   become: yes
+#   roles:
+#    - role: configure-firewall
+#      fire_wall_ports: "{{ worker_firewall_ports }}"
+#    - role: worker-nodes

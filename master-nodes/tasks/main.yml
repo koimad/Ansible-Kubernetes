@@ -1,0 +1,50 @@
+---
+# Task to initialise the Kunbernetes Cluster
+
+- name: Check if kubernetes already initialised
+  stat:
+    path: /etc/kubernetes/admin.conf
+  register: kubernetes_init_status
+
+- name: Initialize K8S cluster block
+  block:
+    - name: Initialize K8S cluster
+      shell: kubeadm init --pod-network-cidr="{{ pod_network_cidr }}" 
+      
+    - name: Create .kube directory
+      file:
+        path: $HOME/.kube
+        state: directory
+        mode: 0755
+
+    - name: Copy admin.conf to user kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: $HOME/.kube/config
+        remote_src: yes
+
+  when: not kubernetes_init_status.stat.exists
+
+- name: Copy Calico Configuration 
+  ansible.builtin.template:
+    src: Calico-installation-configuration.j2
+    dest: $HOME/Calico-installation-configuration.yaml
+
+- name: Delete Calico CNI
+  shell: kubectl delete -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/tigera-operator.yaml
+  ignore_errors: true
+
+- name: Install Calico CNI
+  shell: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/tigera-operator.yaml
+
+- name: Configure Calico CNI
+  shell: kubectl apply -f $HOME/Calico-installation-configuration.yaml
+
+- name: Install Calicoctl
+  copy:
+    src: files/calicoctl/calicoctl-linux-amd64
+    dest: /usr/local/bin/calicoctl
+    owner: root
+    group: root
+    mode: u+x,g=+x,o=+x
+

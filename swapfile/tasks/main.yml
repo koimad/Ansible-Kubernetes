@@ -1,0 +1,12 @@
+---
+# tasks file for swap disable swap file
+- name: Disable SWAP 
+  shell: |
+    swapoff -a
+
+- name: Disable SWAP in fstab, persist reboots
+  replace:
+    path: /etc/fstab
+    regexp: '^(\s*)([^#\n]+\s+)(\w+\s+)swap(\s+.*)$'
+    replace: '#\1\2\3swap\4'
+    backup: yes

@@ -1,0 +1,46 @@
+all:
+  children:
+    masters:
+      hosts:
+        redhat-8-c1-cp1:
+
+    workers:
+      hosts:
+        redhat-8-c1-node1:
+        redhat-8-c1-node2:
+
+  vars:
+    master_firewall_ports:        
+      - 80/tcp
+      - 443/tcp
+      - 6443/tcp
+      - 2379-2380/tcp
+      - 10250/tcp
+      - 10251/tcp
+      - 10252/tcp
+      - 179/tcp
+      - 4789/udp
+      - 5473/tcp
+      - 51820/udp
+      - 51821/udp    
+
+    worker_firewall_ports:
+      - 80/tcp
+      - 443/tcp
+      - 6443/tcp
+      - 10250/tcp
+      - 30000-32767/tcp
+      - 179/tcp
+      - 4789/udp
+      - 5473/tcp
+      - 51820/udp
+      - 51821/udp
+      - 2379/tcp         
+
+    # Kebernetes pod CIDR, should not cause clash with host networks CIDR
+    pod_network_cidr: 192.160.0.0/16
+
+    # Calico Pod Network CIDR should be a subnet of pod_network_cidr
+    calico_pod_cidr: 192.160.0.0/18 
+
+    masterNode: redhat-8-c1-cp1

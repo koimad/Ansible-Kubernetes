@@ -1,0 +1,6 @@
+---
+calicoVersion: "1.24"
+calicoOS: "CentOS_8"
+
+pod_network_cidr:
+  - "192.150.0.0/16"

@@ -1,0 +1,12 @@
+---
+# tasks file for configuring firewall ports
+
+- name: Configure firewalld firewall ports
+  ansible.posix.firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+  with_items: '{{ fire_wall_ports }}'
+
+- name: Reload firewalld
+  shell: firewall-cmd --reload  

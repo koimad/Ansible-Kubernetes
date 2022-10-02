@@ -1,0 +1,6 @@
+---
+# Kebernetes pod CIDR, should not cause clash with host networks CIDR
+pod_network_cidr: 192.160.0.0/16
+
+# Calico Pod Network CIDR should be a subnet of pod_network_cidr
+calico_pod_cidr: 192.160.0.0/18 

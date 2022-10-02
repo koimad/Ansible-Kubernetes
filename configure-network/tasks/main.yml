@@ -1,0 +1,37 @@
+---
+# tasks file for loading networking modules and setting up network bridge 
+
+- name: Load required modules
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ kernel_modules }}"      
+
+- name: Ensure File k8s.conf exists
+  ansible.builtin.copy:
+    content: ''
+    force: yes
+    dest: /etc/modules-load.d/k8s.conf
+
+- name: Populate File k8s.conf
+  lineinfile: 
+    dest:  /etc/modules-load.d/k8s.conf
+    line: "{{ item }}"
+  check_mode: no  
+  with_items:
+    - "{{ kernel_modules }}" 
+
+  
+- name: Setup required sysctl params
+  ansible.posix.sysctl:
+    name: '{{ item.key }}'
+    value: '{{ item.value }}'
+    sysctl_set: yes
+    sysctl_file : /etc/sysctl.d/k8s.conf
+    state: present
+    reload: yes
+  with_items:
+    - {key: net.bridge.bridge-nf-call-ip6tables, value: 1}
+    - {key: net.bridge.bridge-nf-call-iptables,  value: 1}
+    - {key: net.ipv4.ip_forward,  value: 1}

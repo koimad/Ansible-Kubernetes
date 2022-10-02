@@ -1,0 +1,28 @@
+---
+# tasks file for installing and configuring kubernetes 
+- name: Add Kubernetes Repository
+  ansible.builtin.copy:
+    src: kubernetes.repo
+    dest: /etc/yum.repos.d/kubernetes.repo
+
+- name: Add Kubernetes YUM repository
+  yum_repository:
+    name: Kubernetes
+    description: Kubernetes YUM repository
+    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+    gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+    gpgcheck: yes
+    repo_gpgcheck: 1
+    enabled: 1
+    exclude: kubelet kubeadm kubectl
+
+- name: Install kubernetes packages
+  yum:
+    name: [kubelet,kubeadm,kubectl]
+    disable_excludes: kubernetes
+    state: present
+
+- name: Enable kubelet service
+  ansible.builtin.service:
+    name: kubelet
+    enabled: yes    
