@@ -3,13 +3,31 @@ all:
     masters:
       hosts:
         redhat-8-c1-cp1:
+      vars:
+        workerEnpoints: 
+          - worker1:
+            name: redhat-8-c1-node1
+            ipAddress: 192.168.0.212
+            interfaceName: eth0
+          
+          - worker2:
+            name: redhat-8-c1-node2
+            ipAddress: 192.168.0.213              
+            interfaceName: eth0
+        
+        controlEndpoints:
+          - control1:
+            name: redhat-8-c1-cp1
+            ipAddress: 192.168.0.211
+            interfaceName: eth0
 
     workers:
       hosts:
         redhat-8-c1-node1:
         redhat-8-c1-node2:
+           
+  vars:    
 
-  vars:
     master_firewall_ports:        
       - 80/tcp
       - 443/tcp
@@ -42,5 +60,7 @@ all:
 
     # Calico Pod Network CIDR should be a subnet of pod_network_cidr
     calico_pod_cidr: 192.160.0.0/18 
+    
+    hosts_cidr: 192.168.0.0/16
 
     masterNode: redhat-8-c1-cp1

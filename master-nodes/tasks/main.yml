@@ -1,5 +1,5 @@
 ---
-# Task to initialise the Kunbernetes Cluster
+# Task to initialise the Kunbernetes Cluster and Configure the HostsEndpoints Firewalls using Calico
 
 - name: Check if kubernetes already initialised
   stat:
@@ -31,14 +31,14 @@
     dest: $HOME/Calico-installation-configuration.yaml
 
 - name: Delete Calico CNI
-  shell: kubectl delete -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/tigera-operator.yaml
+  shell: kubectl delete --wait=true -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/tigera-operator.yaml
   ignore_errors: true
 
 - name: Install Calico CNI
-  shell: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/tigera-operator.yaml
+  shell: kubectl create --wait=true -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/tigera-operator.yaml
 
 - name: Configure Calico CNI
-  shell: kubectl apply -f $HOME/Calico-installation-configuration.yaml
+  shell: kubectl apply --wait=true -f $HOME/Calico-installation-configuration.yaml
 
 - name: Install Calicoctl
   copy:
@@ -47,4 +47,19 @@
     owner: root
     group: root
     mode: u+x,g=+x,o=+x
+    
+- name: Create the CreateHostEndpoints file
+  template: 
+    src: CalicoFirewall/CreateHostEndpoints.j2 
+    dest: ~/CreateHostEndpoints.yaml
 
+- name: Create Host Endpoints
+  command: "/usr/local/bin/calicoctl apply -f ~/CreateHostEndpoints.yaml"
+
+- name: Create Default Network Firewall Policy
+  template: 
+    src: CalicoFirewall/HostNetworkPolicy.j2 
+    dest: ~/HostNetworkPolicy.yaml
+
+- name: Apply Default Network Firewall Policy
+  command: "/usr/local/bin/calicoctl apply -f ~/HostNetworkPolicy.yaml"

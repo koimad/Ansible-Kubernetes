@@ -1,0 +1,30 @@
+{% for hostEndPoint in workerEnpoints %}
+---
+apiVersion: projectcalico.org/v3
+kind: HostEndpoint
+metadata:
+  name: host-{{ hostEndPoint.name }}
+  labels:
+    role: k8s-worker
+    worker-endpoint: true
+    control-endpoint: false
+spec:
+  interfaceName: {{ hostEndPoint.interfaceName }}
+  node: {{ hostEndPoint.name }}
+  expectedIPs: ["{{hostEndPoint.ipAddress}}"]
+{% endfor %} 
+{% for controlEndPoint in controlEndpoints -%}
+---
+apiVersion: projectcalico.org/v3
+kind: HostEndpoint
+metadata:
+  name: host-{{controlEndPoint.name}}
+  labels:
+    role: k8s-controller
+    worker-endpoint: false
+    control-endpoint: true
+spec:
+  interfaceName: {{controlEndPoint.interfaceName}}
+  node: {{controlEndPoint.name}}
+  expectedIPs: ["{{controlEndPoint.ipAddress}}"]
+{% endfor %}

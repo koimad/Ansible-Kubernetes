@@ -7,22 +7,22 @@
    - role: selinux
    - role: configure-network
    - role: firewallstate
-     firewall_service_state: "disable"
-   - role: firewallstate
-     firewall_service_state: "enable"  
+     firewall_service_state: "disable" # we are using Calico to manage host firewall behaviour
+  #  - role: firewallstate
+  #    firewall_service_state: "enable"  
    - role: crio
    - role: install-k8s
 
 - hosts: masters
   become: yes
   roles:
-   - role: configure-firewall
-     fire_wall_ports: "{{ master_firewall_ports }}"
+  #  - role: configure-firewall
+  #    fire_wall_ports: "{{ master_firewall_ports }}"
    - role: master-nodes
    
 - hosts: workers
   become: yes
   roles:
-   - role: configure-firewall
-     fire_wall_ports: "{{ worker_firewall_ports }}"
+  #  - role: configure-firewall
+  #    fire_wall_ports: "{{ worker_firewall_ports }}"
    - role: worker-nodes
