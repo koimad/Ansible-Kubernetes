@@ -14,6 +14,8 @@ spec:
       encapsulation: VXLANCrossSubnet
       natOutgoing: Enabled
       nodeSelector: all()
+  # Configure  to use the image repo
+  registry: "{{ calico_docker_repository }}"
 
 ---
 

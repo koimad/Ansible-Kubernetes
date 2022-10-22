@@ -29,3 +29,10 @@
     name: "{{ item }}"
   with_items:
     - "{{ basic_packages }}"    
+
+- name: Install kubenetes python package
+  ansible.builtin.pip:
+    name: kubernetes        
+    state: present
+    executable: pip3
+       

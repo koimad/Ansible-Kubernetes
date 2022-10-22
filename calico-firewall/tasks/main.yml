@@ -1,0 +1,24 @@
+---
+- name: wait for pods to come up
+  ansible.builtin.include_tasks:
+    file: common/tasks/waitforpods.yaml
+
+- name: Create the CreateHostEndpoints file
+  template: 
+    src: CreateHostEndpoints.j2 
+    dest: ~/CreateHostEndpoints.yaml
+
+- name: Create Default Network Firewall Policy
+  template: 
+    src: HostNetworkPolicy.j2 
+    dest: ~/HostNetworkPolicy.yaml
+
+- name: Apply Default Network Firewall Policy
+  command: '/usr/local/bin/calicoctl apply -f ~/HostNetworkPolicy.yaml'
+
+- name: wait for pods to come up
+  ansible.builtin.include_tasks:
+    file: common/tasks/waitforpods.yaml
+
+- name: Create Host Endpoints
+  command: '/usr/local/bin/calicoctl apply -f ~/CreateHostEndpoints.yaml'

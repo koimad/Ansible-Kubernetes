@@ -1,6 +1,5 @@
 ---
 # Task to initialise the Kunbernetes Cluster and Configure the HostsEndpoints Firewalls using Calico
-
 - name: Check if kubernetes already initialised
   stat:
     path: /etc/kubernetes/admin.conf
@@ -13,32 +12,27 @@
       
     - name: Create .kube directory
       file:
-        path: $HOME/.kube
+        path: ~/.kube
         state: directory
         mode: 0755
 
     - name: Copy admin.conf to user kube config
       copy:
         src: /etc/kubernetes/admin.conf
-        dest: $HOME/.kube/config
+        dest: ~/.kube/config
         remote_src: yes
 
   when: not kubernetes_init_status.stat.exists
 
-- name: Copy Calico Configuration 
-  ansible.builtin.template:
-    src: Calico-installation-configuration.j2
-    dest: $HOME/Calico-installation-configuration.yaml
-
-- name: Delete Calico CNI
-  shell: kubectl delete --wait=true -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/tigera-operator.yaml
-  ignore_errors: true
-
 - name: Install Calico CNI
-  shell: kubectl create --wait=true -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/tigera-operator.yaml
+  kubernetes.core.k8s:
+    state: present
+    template: 'tigera-operator.j2'
 
 - name: Configure Calico CNI
-  shell: kubectl apply --wait=true -f $HOME/Calico-installation-configuration.yaml
+  kubernetes.core.k8s:
+    state: present
+    template: Calico-installation-configuration.j2
 
 - name: Install Calicoctl
   copy:
@@ -48,18 +42,8 @@
     group: root
     mode: u+x,g=+x,o=+x
     
-- name: Create the CreateHostEndpoints file
-  template: 
-    src: CalicoFirewall/CreateHostEndpoints.j2 
-    dest: ~/CreateHostEndpoints.yaml
+- name: Set IPVS mode if required
+  shell: 'kubectl get configmap kube-proxy -n kube-system -o yaml | sed -e "s/strictARP: false/strictARP: true/" | kubectl apply -f - -n kube-system'
+  when: ipvsMode  
 
-- name: Create Host Endpoints
-  command: "/usr/local/bin/calicoctl apply -f ~/CreateHostEndpoints.yaml"
 
-- name: Create Default Network Firewall Policy
-  template: 
-    src: CalicoFirewall/HostNetworkPolicy.j2 
-    dest: ~/HostNetworkPolicy.yaml
-
-- name: Apply Default Network Firewall Policy
-  command: "/usr/local/bin/calicoctl apply -f ~/HostNetworkPolicy.yaml"

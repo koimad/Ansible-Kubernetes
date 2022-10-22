@@ -12,25 +12,42 @@ spec:
       source:
         nets: [{{ calico_pod_cidr }},{{ pod_network_cidr }},{{ hosts_cidr }}]
   selector: has(worker-endpoint) || has(control-endpoint)
+
 ---
 apiVersion: projectcalico.org/v3
 kind: GlobalNetworkPolicy
 metadata:
-  name: drop-other-ingress
+  name: allow-cluster-internal-egress
 spec:
-  order: 20
+  order: 11
+  egress:
+    - action: Allow
+      protocol: TCP
+      destination:
+        nets: [{{ calico_pod_cidr }},{{ pod_network_cidr }},{{ hosts_cidr }}]
+        ports: [80,443,6443,9443,2379:2380,10250,10251,10252,179,5473,30000:32767]
+  selector: has(worker-endpoint) || has(control-endpoint)
+
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: drop-all-other-other-ingress
+spec:
+  order: 1000
   preDNAT: true
   applyOnForward: true
-  ingress:
-    - action: Deny
+  ingress:    
+    - action: Deny    
   selector: has(worker-endpoint) || has(control-endpoint)
+
 ---
 apiVersion: projectcalico.org/v3
 kind: GlobalNetworkPolicy
 metadata:
-  name: allow-web-ports
+  name: allow-web-ports-and-dns
 spec:
-  order: 19
+  order: 12
     #applyOnForward: true  
   egress:
     - action: Allow
@@ -42,14 +59,29 @@ spec:
       destination:
         ports: [53]         
   selector: has(worker-endpoint) || has(control-endpoint) 
+
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: allow-docker-repo
+spec:
+  order: 12
+    #applyOnForward: true  
+  egress:
+    - action: Allow
+      protocol: TCP
+      destination:
+        ports: [8444]
+  selector: has(worker-endpoint) || has(control-endpoint) 
+
 ---
 apiVersion: projectcalico.org/v3
 kind: GlobalNetworkPolicy
 metadata:
   name: allow-ssh
 spec:
-  order: 19
-    #applyOnForward: true  
+  order: 13    
   egress:
     - action: Allow
       protocol: TCP

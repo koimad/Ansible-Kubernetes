@@ -2,8 +2,10 @@ all:
   children:
     masters:
       hosts:
-        redhat-8-c1-cp1:
+        redhat-8-c1-cp1:        
       vars:
+        ipvsMode: false;        
+
         workerEnpoints: 
           - worker1:
             name: redhat-8-c1-node1
@@ -25,8 +27,19 @@ all:
       hosts:
         redhat-8-c1-node1:
         redhat-8-c1-node2:
-           
+              
   vars:    
+    ansible_user: brian
+    ansible_connection: ssh
+    
+    ca_path:
+      RedHat:
+        7: /etc/pki/ca-trust/source/anchors
+        8: /etc/pki/ca-trust/source/anchors  
+        9: /etc/pki/ca-trust/source/anchors
+
+    calico_docker_repository: "dev-dc01.dev.local:8444"  
+    #calico_docker_repository: "quay.io"  
 
     master_firewall_ports:        
       - 80/tcp
@@ -61,6 +74,8 @@ all:
     # Calico Pod Network CIDR should be a subnet of pod_network_cidr
     calico_pod_cidr: 192.160.0.0/18 
     
-    hosts_cidr: 192.168.0.0/16
+    hosts_cidr: 192.168.0.0/24
 
     masterNode: redhat-8-c1-cp1
+
+    metallb_ip_address_range: 192.168.0.230-192.168.0.240

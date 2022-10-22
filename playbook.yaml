@@ -1,5 +1,6 @@
 ---
-- hosts: all
+- name: Install Prerequisites
+  hosts: all  
   become: yes
   roles:
    - role: pre-setup
@@ -12,17 +13,30 @@
   #    firewall_service_state: "enable"  
    - role: crio
    - role: install-k8s
+  tags: Prerequisites
 
-- hosts: masters
+- name: Install Master Nodes
+  hosts: masters
   become: yes
   roles:
   #  - role: configure-firewall
   #    fire_wall_ports: "{{ master_firewall_ports }}"
-   - role: master-nodes
-   
-- hosts: workers
-  become: yes
+  - role: master-nodes
+  tags: MasterNodes
+
+- name: Install Kubernetes Worker Nodes
+  hosts: workers
+  become: yes  
   roles:
   #  - role: configure-firewall
   #    fire_wall_ports: "{{ worker_firewall_ports }}"
-   - role: worker-nodes
+  - role: worker-nodes
+  tags: WorkerNodes
+
+- name: Configure Calico Firewalls & Applications
+  hosts: masters
+  become: yes
+  roles:
+  - role: calico-firewall
+  - role: metallb
+  tags: Applications

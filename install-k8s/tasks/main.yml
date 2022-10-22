@@ -1,9 +1,9 @@
 ---
 # tasks file for installing and configuring kubernetes 
-- name: Add Kubernetes Repository
-  ansible.builtin.copy:
-    src: kubernetes.repo
-    dest: /etc/yum.repos.d/kubernetes.repo
+# - name: Add Kubernetes Repository
+#   ansible.builtin.copy:
+#     src: kubernetes.repo
+#     dest: /etc/yum.repos.d/kubernetes.repo
 
 - name: Add Kubernetes YUM repository
   yum_repository:

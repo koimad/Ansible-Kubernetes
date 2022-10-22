@@ -4,3 +4,9 @@ calicoOS: "CentOS_8"
 
 pod_network_cidr:
   - "192.150.0.0/16"
+
+ca_path:
+  RedHat:
+    7: /etc/pki/ca-trust/source/anchors
+    8: /etc/pki/ca-trust/source/anchors  
+    9: /etc/pki/ca-trust/source/anchors  

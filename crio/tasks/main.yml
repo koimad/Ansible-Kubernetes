@@ -7,6 +7,20 @@
 - name: Setup Yum Repo /etc/yum.repos.d/devel:kubic:libcontainers:stable:cri-o:VERSION.repo
   command: curl -L -o /etc/yum.repos.d/devel:kubic:libcontainers:stable:cri-o:{{calicoVersion}}.repo https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{calicoVersion}}/{{calicoOS}}/devel:kubic:libcontainers:stable:cri-o:{{calicoVersion}}.repo
 
+# update root ca's before starting to install.
+- name: Update Root Certificate Authorities
+  copy:
+    src: '{{ item }}'
+    dest: '{{ ca_path[ansible_os_family][ansible_distribution_major_version|int] }}/'
+    owner: root
+    group: root
+    mode: 0644
+  with_fileglob:
+    - files/ca/*
+
+- name: Update trusted ca
+  shell: /bin/update-ca-trust
+
 - name: Install cri-o
   yum:
     name: cri-o
