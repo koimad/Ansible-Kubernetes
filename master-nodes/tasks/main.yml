@@ -7,9 +7,16 @@
 
 - name: Initialize K8S cluster block
   block:
+    - name: Create the kube-init config file
+      template: 
+        src: kube-init.j2 
+        dest: ~/kube-init.yaml
+
+
     - name: Initialize K8S cluster
-      shell: kubeadm init --pod-network-cidr="{{ pod_network_cidr }}" 
-      
+      shell: kubeadm init --config ~/kube-init.yaml # deploy using custom config and local repos
+      #shell: kubeadm init --pod-network-cidr='{{ pod_network_cidr }}' # install with default container repos
+
     - name: Create .kube directory
       file:
         path: ~/.kube

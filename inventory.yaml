@@ -38,9 +38,14 @@ all:
         8: /etc/pki/ca-trust/source/anchors  
         9: /etc/pki/ca-trust/source/anchors
 
-    calico_docker_repository: "dev-dc01.dev.local:8444"  
-    #calico_docker_repository: "quay.io"  
+    local_container_repo: 'dev-dc01.dev.local:8444'
 
+    calico_docker_repository: '{{local_container_repo}}'  
+    #calico_docker_repository: "quay.io"  
+    
+    kubernetes_repository: '{{local_container_repo}}'
+    #kubernetes_repository: 'registry.k8s.io'  
+       
     master_firewall_ports:        
       - 80/tcp
       - 443/tcp
@@ -68,8 +73,10 @@ all:
       - 51821/udp
       - 2379/tcp         
 
-    # Kebernetes pod CIDR, should not cause clash with host networks CIDR
+    # Kebernetes pod CIDR and service CIDR, should not cause clash with host networks CIDR
     pod_network_cidr: 192.160.0.0/16
+    service_subnet_cidr: 10.96.0.0/12
+
 
     # Calico Pod Network CIDR should be a subnet of pod_network_cidr
     calico_pod_cidr: 192.160.0.0/18 
