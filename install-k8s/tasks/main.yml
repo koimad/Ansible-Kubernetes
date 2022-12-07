@@ -14,7 +14,7 @@
     gpgcheck: yes
     repo_gpgcheck: 1
     enabled: 1
-    exclude: kubelet kubeadm kubectl
+   # exclude: kubelet kubeadm kubectl
 
 - name: Install kubernetes packages
   yum:

@@ -12,7 +12,6 @@
         src: kube-init.j2 
         dest: ~/kube-init.yaml
 
-
     - name: Initialize K8S cluster
       shell: kubeadm init --config ~/kube-init.yaml # deploy using custom config and local repos
       #shell: kubeadm init --pod-network-cidr='{{ pod_network_cidr }}' # install with default container repos

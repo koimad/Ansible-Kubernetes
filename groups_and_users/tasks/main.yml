@@ -1,0 +1,20 @@
+# Groups and Users Used by pods in the cluster
+---
+- name: Ensure group "greoservergrp" exists with correct gid
+  ansible.builtin.group:
+    name: geoservergrp
+    state: present
+    gid: 3000
+
+- name: Add the user 'geoserver' with a specific uid and a primary group of 'admin'
+  ansible.builtin.user:
+    name: geoserver
+    comment: 'User Account For Geo Server Containers'
+    uid: 0901
+    group: geoservergrp
+    system: true
+    password: '!' 
+    state: present
+
+
+

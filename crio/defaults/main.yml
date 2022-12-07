@@ -1,6 +1,6 @@
 ---
-calicoVersion: "1.24"
-calicoOS: "CentOS_8"
+crioVersion: "1.25"
+crioOS: "CentOS_8_Stream"
 
 pod_network_cidr:
   - "192.150.0.0/16"

@@ -2,10 +2,10 @@
 # tasks file for installing and configuring CRIO 
 
 - name: Setup Yum Repo  /etc/yum.repos.d/devel:kubic:libcontainers:stable.repo 
-  command: curl -L -o /etc/yum.repos.d/devel:kubic:libcontainers:stable.repo https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{calicoOS}}/devel:kubic:libcontainers:stable.repo
+  command: curl -L -o /etc/yum.repos.d/devel:kubic:libcontainers:stable.repo https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{crioOS}}/devel:kubic:libcontainers:stable.repo
 
 - name: Setup Yum Repo /etc/yum.repos.d/devel:kubic:libcontainers:stable:cri-o:VERSION.repo
-  command: curl -L -o /etc/yum.repos.d/devel:kubic:libcontainers:stable:cri-o:{{calicoVersion}}.repo https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{calicoVersion}}/{{calicoOS}}/devel:kubic:libcontainers:stable:cri-o:{{calicoVersion}}.repo
+  command: curl -L -o /etc/yum.repos.d/devel:kubic:libcontainers:stable:cri-o:{{crioVersion}}.repo https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{crioVersion}}/{{crioOS}}/devel:kubic:libcontainers:stable:cri-o:{{crioVersion}}.repo
 
 # update root ca's before starting to install.
 - name: Update Root Certificate Authorities

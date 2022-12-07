@@ -20,5 +20,5 @@
   ansible.builtin.include_tasks:
     file: common/tasks/waitforpods.yaml
 
-- name: Create Host Endpoints
-  command: '/usr/local/bin/calicoctl apply -f ~/CreateHostEndpoints.yaml'
+# - name: Create Host Endpoints
+#   command: '/usr/local/bin/calicoctl apply -f ~/CreateHostEndpoints.yaml'
