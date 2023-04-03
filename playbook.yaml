@@ -13,7 +13,7 @@
   #    firewall_service_state: "enable"  
    - role: crio
    - role: install-k8s
-   - role: groups_and_users
+  # - role: groups_and_users
   tags: Prerequisites
 
 - name: Install Master Nodes
