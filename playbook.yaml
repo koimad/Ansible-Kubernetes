@@ -38,6 +38,6 @@
   hosts: masters
   become: yes
   roles:
-  - role: calico-firewall
+  #- role: calico-firewall
   - role: metallb
   tags: Applications

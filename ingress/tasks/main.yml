@@ -1,0 +1,15 @@
+---
+- name: Copy the NgInx Ingress Controller setup file
+  template: 
+    src: nginx-ingress.j2
+    dest: ~/nginx-ingress.yaml 
+
+- name: Apply the Metallb Native setup file
+  kubernetes.core.k8s:
+    state: present
+    src: ~/nginx-ingress.yaml    
+    wait: no
+    wait_condition:
+      type: Complete
+      status: "True"
+  ignore_errors: true    
