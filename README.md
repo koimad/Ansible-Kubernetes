@@ -13,9 +13,9 @@ With using a local repository, I've used a custom config file for initialising t
 The machines required are given below. If you can allocate more compute resources, its better :-
 
     1. Ansible controller - 1 vcpu / 2 gib ram
-    2. Kubernetes Master  - 2 vcpu / 2 gib ram
-    3. Kubernetes Node1   - 2 vcpu / 2 gib ram
-    4. Kubernetes Node2   - 2 vcpu / 2 gib ram
+    2. Kubernetes Master  - 2 vcpu / 4 gib ram
+    3. Kubernetes Node1   - 2 vcpu / 4 gib ram
+    4. Kubernetes Node2   - 2 vcpu / 4 gib ram
 ## Setup Hosts DNS Resolution
 
 If you are not using a DNS server it is easier to setup the /etc/ hosts file and copy to all machines with the below command
@@ -52,6 +52,31 @@ Install json queries support need to use pip version to match python version fro
     or
     pip3.8 install jmespath --user
 ``` 
+
+## Generate GPG Certificate for using Nexus as a YUM Proxy for Google's Yum Repository for Kubernetes
+If you need to use Nexus as a Proxy repository for the Google Kubernetes Yum Packages then the Repository needs to be setup with a PGP key as below.
+
+1. Generate a GPG key
+<pre><code>
+    gpg --gen-key
+</code></pre> 
+
+2. Export the public gpg key
+<pre><code>
+    gpg --armor --output RPM-GPG-KEY-google --export <i>email specified at step 1</i> 
+</code></pre>   
+
+3. Export the private gpg key.
+<pre><code>
+    gpg --armor --output RPM-GPG-KEY-google.secret --export-secret-key <i>email specified at step 1</i> 
+</code></pre>   
+
+4. Add the priave key to the Nexus Repo
+
+5. Add the password for the key to the nexus repo
+
+6. Copy the public key into the install-k8s role in the files folder, update role if name of file changed.
+
 ## Container Repo SSL Certificate & Ports Considerations
 The playbook configures Calico CNI to use a local Nexus container repo. The following needs to be considered when using this playbook
     
@@ -62,10 +87,11 @@ The playbook configures Calico CNI to use a local Nexus container repo. The foll
        (a)  local_container_repo
        (b)  calico_docker_repository
        (c)  kubernetes_repository
+      
     
     I've left the public repository urls commented out as an alternative.
     
-    1. Update the enpoint firewall as required to allow the container repo network traffic.
+    3. Update the enpoint firewall as required to allow the container repo network traffic.
           Lcation: calico-firewall/templates/HostNetworkPolicy.j2
 ## Update inverntory file
 
@@ -89,6 +115,6 @@ ask for privilege escalation password
 <br></br>
 ## ToDo
 ```
-    1. Install a Ingress Controller
+
 ```
 

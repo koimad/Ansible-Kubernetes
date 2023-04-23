@@ -1,24 +1,23 @@
 ---
 # tasks file for installing and configuring kubernetes 
-# - name: Add Kubernetes Repository
-#   ansible.builtin.copy:
-#     src: kubernetes.repo
-#     dest: /etc/yum.repos.d/kubernetes.repo
+- name: Copy RPM-GPG-KEY-google GPG public key
+  ansible.builtin.copy:
+    src: RPM-GPG-KEY-google
+    dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-google
 
-- name: Add Kubernetes YUM repository
+- name: Add Google YUM repository
   yum_repository:
-    name: Kubernetes
-    description: Kubernetes YUM repository
-    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
-    gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+    name: Google
+    description: Google YUM repository
+    baseurl: '{{ kubernetes_yum_repo }}'
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-google
     gpgcheck: yes
     repo_gpgcheck: 1
     enabled: 1
-   # exclude: kubelet kubeadm kubectl
 
 - name: Install kubernetes packages
   yum:
-    name: [kubelet,kubeadm,kubectl]
+    name: [kubelet-1.27.1-0,kubeadm-1.27.1-0,kubectl-1.27.1-0]
     disable_excludes: kubernetes
     state: present
 

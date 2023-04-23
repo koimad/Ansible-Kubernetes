@@ -30,6 +30,21 @@
   with_items:
     - "{{ basic_packages }}"    
 
+- name: Copy Root Certificates into the anchors folder  
+  copy:
+    src: "rootca/"
+    dest: "/etc/pki/ca-trust/source/anchors/"
+  register: result
+  
+- name: Update CA Trusts
+  command: update-ca-trust
+  when: result is changed
+
+- name: Add Pip config so we point to our repository
+  ansible.builtin.template:
+    src: pip.conf.j2
+    dest: '/etc/pip.conf'
+
 - name: Install kubenetes python package
   ansible.builtin.pip:
     name: kubernetes        
