@@ -23,6 +23,7 @@
   #  - role: configure-firewall
   #    fire_wall_ports: "{{ master_firewall_ports }}"
   - role: master-nodes
+  - role: helm-install
   tags: MasterNodes
 
 - name: Install Kubernetes Worker Nodes

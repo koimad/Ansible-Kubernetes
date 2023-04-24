@@ -77,18 +77,17 @@ If you need to use Nexus as a Proxy repository for the Google Kubernetes Yum Pac
 
 6. Copy the public key into the install-k8s role in the files folder, update role if name of file changed.
 
-## Container Repo SSL Certificate & Ports Considerations
+## Root Certificate Authority
+    1. Add a root ca certtificate if you are using your own ROOT CA.
+          Location: pre-setup/files/rootca/
+## Container Ports Considerations
 The playbook configures Calico CNI to use a local Nexus container repo. The following needs to be considered when using this playbook
     
-    1. Add a root ca certtificate if you are using your own for the SSL connection to your docker repository (eg Nexus) to that CRIO can verify the certificate chain
-          Location: crio/files/ca 
-    
-    2. Update the variables as required:-
+    1. Update the variables as required:-
        (a)  local_container_repo
        (b)  calico_docker_repository
        (c)  kubernetes_repository
-      
-    
+          
     I've left the public repository urls commented out as an alternative.
     
     3. Update the enpoint firewall as required to allow the container repo network traffic.

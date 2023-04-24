@@ -89,9 +89,11 @@ all:
 
     local_repository_host: dev-dc01.dev.local
 
-    # Kebernetes repo for downloading kubernetes required yum packages
+    # Kebernetes repo url for downloading kubernetes required yum packages
     kubernetes_yum_repo:  'https://{{ local_repository_host }}:8443/repository/google/kubernetes-el7-x86_64'
     
+    # Opensuse repo url for downloading kubernetes required yum packages
+    opensuse_yum_repo: 'https://{{ local_repository_host }}:8443/repository/opensuse/{{ crioOS }}'
+
     # Python Repository 
-    
     local_python_repository: https://{{ local_repository_host }}:8443/repository/Python 

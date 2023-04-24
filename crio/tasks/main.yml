@@ -1,11 +1,20 @@
 ---
 # tasks file for installing and configuring CRIO 
 
-- name: Setup Yum Repo  /etc/yum.repos.d/devel:kubic:libcontainers:stable.repo 
-  command: curl -L -o /etc/yum.repos.d/devel:kubic:libcontainers:stable.repo https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{crioOS}}/devel:kubic:libcontainers:stable.repo
+- name: Copy RPM-GPG-KEY-opensuse GPG public key
+  ansible.builtin.copy:
+    src: RPM-GPG-KEY-opensuse
+    dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-opensuse
 
-- name: Setup Yum Repo /etc/yum.repos.d/devel:kubic:libcontainers:stable:cri-o:VERSION.repo
-  command: curl -L -o /etc/yum.repos.d/devel:kubic:libcontainers:stable:cri-o:{{crioVersion}}.repo https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{crioVersion}}/{{crioOS}}/devel:kubic:libcontainers:stable:cri-o:{{crioVersion}}.repo
+- name: Add Opensuse YUM repository
+  yum_repository:
+    name: opensuse
+    description: opensuse YUM repository
+    baseurl: '{{ opensuse_yum_repo }}'
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-opensuse
+    gpgcheck: yes
+    repo_gpgcheck: 1
+    enabled: 1
 
 - name: Install cri-o
   yum:
@@ -15,7 +24,7 @@
 
 - name: Configure cri-o subnet
   ansible.builtin.replace:
-    path: /etc/cni/net.d/100-crio-bridge.conf
+    path: /etc/cni/net.d/100-crio-bridge.conflist
     regexp: '10\.85\.0\.0\/16'
     replace: '{{ pod_network_cidr }}'
   ignore_errors: True                              
