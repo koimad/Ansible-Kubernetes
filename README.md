@@ -114,6 +114,7 @@ ask for privilege escalation password
 <br></br>
 ## ToDo
 ```
+helm upgrade --install nginx-ingress helm-local/nginx-ingress --values ingress-values.yaml -n nginx-ingress --create-namespace
 
 ```
 

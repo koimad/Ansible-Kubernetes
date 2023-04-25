@@ -1,0 +1,89 @@
+---
+- name: Add Prometheus Community Stack chart repo
+  kubernetes.core.helm_repository:
+    name: helm-local
+    binary_path: /usr/local/bin/helm
+    repo_url: '{{ local_helm_repository }}'
+    state: present
+
+- name: Deploy Prometheus Community Stack chart
+  kubernetes.core.helm:
+    name: monitoring
+    binary_path: /usr/local/bin/helm
+    chart_ref: helm-local/kube-prometheus-stack
+    create_namespace: true
+    release_namespace: monitoring
+    wait: true
+    values: 
+      global:
+        imageRegistry: '{{ local_container_repo }}'
+      alertmanager:
+        enabled: false
+        ingress:
+          enabled: false  
+          hosts:
+            - alermanager.dev.local 
+        alertmanagerSpec:
+          registry: '{{ local_container_repo }}'    
+          repository: prometheus/alertmanager
+          tag: v0.25.0
+          #sha: ""
+      grafana:
+        enabled: true
+        adminPassword: 'Pass@word10'
+        ingress:
+          enabled: true
+          ingressClassName: nginx
+          hosts: 
+            - grafana.dev.local
+          tls: []
+        sidecar:
+          dashboards:
+            enabled: false
+      prometheusOperator:
+        enable: true
+        admissionWebhooks:
+          patch:
+            enabled: true
+            image:
+              registry: '{{ local_container_repo }}'
+              tag: v20221220-controller-v1.5.1-58-g787ea74b6
+              sha: ""
+        image:
+          registry: '{{ local_container_repo }}'   
+        prometheusConfigReloader:
+          image:
+            registry: '{{ local_container_repo }}'
+            repository: prometheus-operator/prometheus-config-reloader
+            # if not set appVersion field from Chart.yaml is used
+            #tag: ""
+            #sha: "" 
+        thanosImage:
+          registry: '{{ local_container_repo }}'
+          repository: thanos/thanos
+          tag: v0.30.2
+          #sha: ""    
+      prometheus:
+        enable: true
+        ingress:
+          enabled:  true
+          ingressClassName: nginx
+          hosts: 
+            - prometheus.dev.local
+          tls: []
+        prometheusSpec:
+          image:
+            registry: '{{ local_container_repo }}'
+            repository: prometheus/prometheus
+            tag: v2.42.0
+            sha: ""
+      thanosRuler:
+        enabled: false             
+        ingress:
+          enabled: false        
+        thanosRulerSpec:
+          image:
+            registry: '{{ local_container_repo }}'
+            repository: thanos/thanos
+            tag: v0.30.2
+            #sha: ""

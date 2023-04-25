@@ -1,15 +1,20 @@
 ---
-- name: Copy the NgInx Ingress Controller setup file
-  template: 
-    src: nginx-ingress.j2
-    dest: ~/nginx-ingress.yaml 
-
-- name: Apply the Metallb Native setup file
-  kubernetes.core.k8s:
+- name: Add nginx-ingress chart repo
+  kubernetes.core.helm_repository:
+    name: helm-local
+    binary_path: /usr/local/bin/helm
+    repo_url: '{{ local_helm_repository }}'
     state: present
-    src: ~/nginx-ingress.yaml    
-    wait: no
-    wait_condition:
-      type: Complete
-      status: "True"
-  ignore_errors: true    
+
+- name: Deploy nginx-ingress helm chart
+  kubernetes.core.helm:
+    name: nginx-ingress
+    binary_path: /usr/local/bin/helm
+    chart_ref: helm-local/nginx-ingress
+    create_namespace: true
+    release_namespace: nginx-ingress
+    wait: true
+    values: 
+      controller:
+        image:
+          repository: '{{ local_container_repo }}/nginx/nginx-ingress'

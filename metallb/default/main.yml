@@ -1,0 +1,2 @@
+local_helm_repository: '{{ local_repository_base_url }}/repository/helm-local'
+local_container_repo: ''

@@ -38,12 +38,13 @@ all:
         8: /etc/pki/ca-trust/source/anchors  
         9: /etc/pki/ca-trust/source/anchors
 
-    local_container_repo: 'dev-dc01.dev.local:8444'
+    local_repository_host: dev-dc01.dev.local
+    local_container_repo: '{{ local_repository_host }}:8444'
 
-    calico_docker_repository: '{{local_container_repo}}'  
+    calico_docker_repository: '{{ local_container_repo }}'  
     #calico_docker_repository: "quay.io"  
     
-    kubernetes_repository: '{{local_container_repo}}'
+    kubernetes_repository: '{{ local_container_repo }}'
     #kubernetes_repository: 'registry.k8s.io'  
        
     master_firewall_ports:        
@@ -86,14 +87,17 @@ all:
     masterNode: redhat-8-c1-cp1
 
     metallb_ip_address_range: 192.168.0.230-192.168.0.240
-
-    local_repository_host: dev-dc01.dev.local
+    
+    local_repository_base_url: https://{{ local_repository_host }}:8443
 
     # Kebernetes repo url for downloading kubernetes required yum packages
-    kubernetes_yum_repo:  'https://{{ local_repository_host }}:8443/repository/google/kubernetes-el7-x86_64'
+    kubernetes_yum_repo:  '{{ local_repository_base_url }}/repository/google/kubernetes-el7-x86_64'
     
     # Opensuse repo url for downloading kubernetes required yum packages
-    opensuse_yum_repo: 'https://{{ local_repository_host }}:8443/repository/opensuse/{{ crioOS }}'
+    opensuse_yum_repo: '{{ local_repository_base_url }}/repository/opensuse/{{ crioOS }}'
 
     # Python Repository 
-    local_python_repository: https://{{ local_repository_host }}:8443/repository/Python 
+    local_python_repository: '{{ local_repository_base_url }}/repository/Python'
+
+    #Local Helm Repo
+    local_helm_repository: '{{ local_repository_base_url }}/repository/helm-local'

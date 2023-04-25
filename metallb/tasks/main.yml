@@ -1,31 +1,42 @@
 ---
-- name: Copy the Metallb Native setup file
-  template: 
-    src: metallb-native.j2
-    dest: ~/metallb-native.yaml 
+- name: Add chart repo
+  kubernetes.core.helm_repository:
+    name: helm-local
+    binary_path: /usr/local/bin/helm
+    repo_url: '{{ local_helm_repository }}'
+    state: present
 
-# - name: Apply the Metallb Native setup file
-#   kubernetes.core.k8s:
-#     state: present
-#     src: ~/metallb-native.yaml    
-#     wait: no
-#     wait_condition:
-#       type: Complete
-#       status: "True"
-#   ignore_errors: true    
+- name: Deploy Metallb helm chart
+  kubernetes.core.helm:
+    name: metallb
+    binary_path: /usr/local/bin/helm
+    chart_ref: helm-local/metallb
+    create_namespace: true
+    release_namespace: metallb-system
+    wait: true
+    values: 
+      controller:
+        image:
+          repository: '{{ local_container_repo }}/metallb/controller'
+          tag: 0.13.2
+      speaker:
+        image:
+          repository: '{{ local_container_repo }}/metallb/speaker' 
+          tag: 0.13.2   
 
 - name: Create Metallb IP Address Range and Advertise
   template: 
     src: metallb-ipaddresses.j2 
     dest: ~/metallb-ipaddresses.yaml
 
-# - name: wait for pods to come up
-#   ansible.builtin.include_tasks:
-#     file: common/tasks/waitforpods.yaml
+- name: wait for pods to come up
+  ansible.builtin.include_tasks:
+    file: common/tasks/waitforpods.yaml
 
-# - name: Apply Metallb IP Address Range and Advertise (does not always work the first time)
-#   kubernetes.core.k8s:
-#     state: present
-#     src: ~/metallb-ipaddresses.yaml
-#     wait: no    
-#   ignore_errors: true
+# Even though this is here may still need to apply it locally.
+- name: Apply Metallb IP Address Range and Advertise (does not always work the first time)
+  kubernetes.core.k8s:
+    state: present
+    src: ~/metallb-ipaddresses.yaml
+    wait: no    
+  ignore_errors: true

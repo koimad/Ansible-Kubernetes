@@ -1,7 +1,7 @@
 ---
 - name: Install Prerequisites
   hosts: all
-  become: yes
+  become: true
   roles:
    - role: pre-setup
    - role: swapfile
@@ -18,7 +18,7 @@
 
 - name: Install Master Nodes
   hosts: masters
-  become: yes
+  become: true
   roles:
   #  - role: configure-firewall
   #    fire_wall_ports: "{{ master_firewall_ports }}"
@@ -28,7 +28,7 @@
 
 - name: Install Kubernetes Worker Nodes
   hosts: workers
-  become: yes
+  become: true
   roles:
   #  - role: configure-firewall
   #    fire_wall_ports: "{{ worker_firewall_ports }}"
@@ -37,10 +37,10 @@
 
 - name: Configure Calico Firewalls & Applications
   hosts: masters
-  become: yes
+  become: true
   roles:
   #- role: calico-firewall
-  #- role: metallb
-  #- role: ingress
-  #- role: prometheus
+  - role: metallb
+  - role: ingress
+  - role: monitoring
   tags: Applications
