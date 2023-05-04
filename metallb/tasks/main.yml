@@ -18,11 +18,11 @@
       controller:
         image:
           repository: '{{ local_container_repo }}/metallb/controller'
-          tag: 0.13.2
+          tag: v0.13.9
       speaker:
         image:
           repository: '{{ local_container_repo }}/metallb/speaker' 
-          tag: 0.13.2   
+          tag: v0.13.9   
 
 - name: Create Metallb IP Address Range and Advertise
   template: 

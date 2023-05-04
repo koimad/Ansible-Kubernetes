@@ -54,7 +54,7 @@ spec:
   capacity:
     storage: 1Gi
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOne
   storageClassName: managed-nfs  
   nfs:
     server: dev-dc01.dev.local
@@ -70,7 +70,7 @@ metadata:
 spec:
   storageClassName: managed-nfs
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOne
   resources:
     requests:
       storage: 500Gi

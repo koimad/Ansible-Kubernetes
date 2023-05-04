@@ -40,7 +40,8 @@
   become: true
   roles:
   #- role: calico-firewall
-  - role: metallb
-  - role: ingress
+  #- role: metallb
+  #- role: ingress
+  - role: nfs-subdir
   - role: monitoring
   tags: Applications

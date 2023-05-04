@@ -1,0 +1,29 @@
+---
+- name: Add Local Chart Repo
+  kubernetes.core.helm_repository:
+    name: helm-local
+    binary_path: /usr/local/bin/helm
+    repo_url: '{{ local_helm_repository }}'
+    state: present
+
+- name: NFS Subdirectory External Provisioner
+  kubernetes.core.helm:
+    name: nfs-storage
+    binary_path: /usr/local/bin/helm
+    chart_ref: helm-local/nfs-subdir-external-provisioner
+    create_namespace: true
+    release_namespace: storage
+    wait: true
+    values: 
+      image: 
+        repository: '{{ local_container_repo }}/sig-storage/nfs-subdir-external-provisioner'
+        tag: 'v4.0.2'
+      nfs:
+        server: '192.168.0.211'
+        path:  '/data' 
+      storageClass:
+        reclaimPolicy: Retain
+        archiveOnDelete: false
+        pathPattern: '${.PVC.namespace}-${.PVC.name}/${.PVC.annotations.nfs.io/storage-path}'
+        accessModes: ReadWriteMany
+        volumeBindingMode: Immediate

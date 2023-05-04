@@ -3020,7 +3020,7 @@ prometheus:
     ##
     #  volumeClaimTemplate:
     #    spec:
-    #      storageClassName: gluster
+    #      storageClassName: managed-nfs
     #      accessModes: ["ReadWriteOnce"]
     #      resources:
     #        requests:

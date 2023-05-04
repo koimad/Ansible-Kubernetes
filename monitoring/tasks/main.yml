@@ -1,5 +1,5 @@
 ---
-- name: Add Prometheus Community Stack chart repo
+- name: Add Local Chart Repo
   kubernetes.core.helm_repository:
     name: helm-local
     binary_path: /usr/local/bin/helm
@@ -15,6 +15,36 @@
     release_namespace: monitoring
     wait: true
     values: 
+      defaultRules:
+        rules: 
+          alertmanager:  false
+          etcd: true
+          configReloaders: true
+          general: true
+          k8s: true
+          kubeApiserverAvailability: true
+          kubeApiserverBurnrate: true
+          kubeApiserverHistogram: true
+          kubeApiserverSlos: true
+          kubeControllerManager: true
+          kubelet: true
+          kubeProxy: true
+          kubePrometheusGeneral: true
+          kubePrometheusNodeRecording: true
+          kubernetesApps: true
+          kubernetesResources: true
+          kubernetesStorage: true
+          kubernetesSystem: true
+          kubeSchedulerAlerting: true
+          kubeSchedulerRecording: true
+          kubeStateMetrics: true
+          network: true
+          node: true
+          nodeExporterAlerting: false
+          nodeExporterRecording: true
+          prometheus: true
+          prometheusOperator: false
+     
       global:
         imageRegistry: '{{ local_container_repo }}'
       alertmanager:
@@ -22,7 +52,7 @@
         ingress:
           enabled: false  
           hosts:
-            - alermanager.dev.local 
+            - alertmanager.dev.local 
         alertmanagerSpec:
           registry: '{{ local_container_repo }}'    
           repository: prometheus/alertmanager
@@ -30,18 +60,94 @@
           #sha: ""
       grafana:
         enabled: true
+        adminUser: 'admin'
         adminPassword: 'Pass@word10'
         ingress:
           enabled: true
           ingressClassName: nginx
           hosts: 
             - grafana.dev.local
-          tls: []
+          tls: []        
+        image:
+          repository: '{{ local_container_repo }}/grafana/grafana'
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+          runAsGroup: 0
+          fsGroup: 0  
+        persistence:
+          type: pvc
+          enabled: true
+          storageClassName: nfs-client
+          accessModes:
+            - 'ReadWriteOnce'
+          size: 5Gi  
+          annotations:
+            nfs.io/storage-path: 'grafana'  
+          finalizers:
+          - kubernetes.io/pvc-protection  
+        initChownData:
+          enabled: true
+          image:
+            repository: '{{ local_container_repo }}/library/busybox'
+            tag: "1.31.1"
+            sha: ""
+            pullPolicy: IfNotPresent    
+          resources: {}
+            # limits:
+            #   cpu: 100m
+            #   memory: 128Mi
+            # requests:
+            #   cpu: 100m
+            #   memory: 128Mi
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+            runAsGroup: 0
+            fsGroup: 0
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              add:
+                - CHOWN              
         sidecar:
           dashboards:
-            enabled: false
+            enabled: true
+          image:
+            repository: '{{ local_container_repo }}/kiwigrid/k8s-sidecar'
+            tag: 1.22.0
+            sha: ""
+          imagePullPolicy: IfNotPresent
+          resources: {}
+          # limits:
+          #   cpu: 100m
+          #   memory: 100Mi
+          # requests:
+          #   cpu: 50m
+          #   memory: 50Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            seccompProfile:
+              type: RuntimeDefault
+        datasources:
+          enabled: true
+          defaultDatasourceEnabled: true
+          isDefaultDatasource: true
+          uid: prometheus
+
+        imageRenderer:
+          enabled: false
+          image:            
+            repository: '{{ local_container_repo }}/grafana/grafana-image-renderer'            
+            tag: latest            
+            sha: ""            
+            pullPolicy: IfNotPresent  
+
       prometheusOperator:
-        enable: true
+        enable: false
         admissionWebhooks:
           patch:
             enabled: true
@@ -66,7 +172,7 @@
       prometheus:
         enable: true
         ingress:
-          enabled:  true
+          enabled: true
           ingressClassName: nginx
           hosts: 
             - prometheus.dev.local
@@ -77,6 +183,36 @@
             repository: prometheus/prometheus
             tag: v2.42.0
             sha: ""
+         
+          storageSpec:
+            volumeClaimTemplate:
+              metadata: 
+                name: prometheus-nfs-pvc
+                annotations:
+                  nfs.io/storage-path: 'prometheus'  
+              spec:
+                storageClassName: nfs-client
+                accessModes: 
+                  - 'ReadWriteMany'
+                resources:
+                  requests:
+                    storage: 5Gi
+
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+            runAsGroup: 0
+            fsGroup: 0
+
+          volumes: 
+          # - name: prometheus-config-volume              
+          #   configMap:
+          #     defaultMode: 420
+          #     name: prometheus-server-conf
+
+          volumeMounts: 
+          # - name: prometheus-config-volume
+          #   mountPath: /etc/prometheus
       thanosRuler:
         enabled: false             
         ingress:
