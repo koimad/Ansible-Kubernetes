@@ -1,4 +1,9 @@
 ---
+- name: Create Config Map for Prometheus
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('file', 'config-map.yaml') | from_yaml }}"
+
 - name: Add Local Chart Repo
   kubernetes.core.helm_repository:
     name: helm-local
@@ -6,58 +11,68 @@
     repo_url: '{{ local_helm_repository }}'
     state: present
 
-- name: Deploy Prometheus Community Stack chart
+- name: Deploy Prometheus and included compoonents
   kubernetes.core.helm:
-    name: monitoring
+    name: prometheus
     binary_path: /usr/local/bin/helm
-    chart_ref: helm-local/kube-prometheus-stack
+    chart_ref: helm-local/prometheus
     create_namespace: true
     release_namespace: monitoring
     wait: true
     values: 
-      defaultRules:
-        rules: 
-          alertmanager:  false
-          etcd: true
-          configReloaders: true
-          general: true
-          k8s: true
-          kubeApiserverAvailability: true
-          kubeApiserverBurnrate: true
-          kubeApiserverHistogram: true
-          kubeApiserverSlos: true
-          kubeControllerManager: true
-          kubelet: true
-          kubeProxy: true
-          kubePrometheusGeneral: true
-          kubePrometheusNodeRecording: true
-          kubernetesApps: true
-          kubernetesResources: true
-          kubernetesStorage: true
-          kubernetesSystem: true
-          kubeSchedulerAlerting: true
-          kubeSchedulerRecording: true
-          kubeStateMetrics: true
-          network: true
-          node: true
-          nodeExporterAlerting: false
-          nodeExporterRecording: true
-          prometheus: true
-          prometheusOperator: false
-     
-      global:
-        imageRegistry: '{{ local_container_repo }}'
-      alertmanager:
-        enabled: false
+      configmapReload:
+        prometheus: 
+          enabled: true
+          image:  
+            repository: '{{ local_container_repo }}/prometheus-operator/prometheus-config-reloader'
+            tag: v0.65.1          
+            pullPolicy: IfNotPresent
+      server:
+        name: server
+        image:
+          repository: '{{ local_container_repo }}/bitnami/prometheus'
+          # if not set appVersion field from Chart.yaml is used
+          tag: '2.43.1'    
+          pullPolicy: IfNotPresent    
+        configPath: /etc/config/prometheus.yml
+        ### The data directory used by prometheus to set --storage.tsdb.path
+        ### When empty server.persistentVolume.mountPath is used instead
+        storagePath: ""
+        global:
+          scrape_interval: 1m
+          scrape_timeout: 10s
+          evaluation_interval: 1m
+        extraConfigmapMounts: []
+        #  - name: prometheus-config-volume
+        #    mountPath: /etc/config/prometheus
+        #    subPath: ""
+        #    configMap: prometheus-server-conf
+        #    readOnly: true          
         ingress:
-          enabled: false  
+          enabled: true  
+          annotations: 
+            kubernetes.io/ingress.class: nginx
           hosts:
-            - alertmanager.dev.local 
-        alertmanagerSpec:
-          registry: '{{ local_container_repo }}'    
-          repository: prometheus/alertmanager
-          tag: v0.25.0
-          #sha: ""
+            - prometheus.dev.local
+          tls: []
+        strategy:
+          type: Recreate  
+        persistentVolume:
+          enabled: true
+          labels: {}
+          annotations: 
+            nfs.io/storage-path: 'prometheus' 
+          accessModes:
+            - ReadWriteMany
+          existingClaim: ""
+          mountPath: /data
+          size: 5Gi  
+          storageClass: "nfs-client"
+        securityContext:
+          runAsUser: 0
+          runAsNonRoot: false
+          runAsGroup: 0
+          fsGroup: 0
       grafana:
         enabled: true
         adminUser: 'admin'
@@ -70,6 +85,7 @@
           tls: []        
         image:
           repository: '{{ local_container_repo }}/grafana/grafana'
+          tag: "v8.2.6"
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
@@ -89,8 +105,8 @@
         initChownData:
           enabled: true
           image:
-            repository: '{{ local_container_repo }}/library/busybox'
-            tag: "1.31.1"
+            repository: '{{ local_container_repo }}/busybox'
+            tag: "1.36.0"
             sha: ""
             pullPolicy: IfNotPresent    
           resources: {}
@@ -115,8 +131,7 @@
             enabled: true
           image:
             repository: '{{ local_container_repo }}/kiwigrid/k8s-sidecar'
-            tag: 1.22.0
-            sha: ""
+            tag: 1.23.3            
           imagePullPolicy: IfNotPresent
           resources: {}
           # limits:
@@ -142,84 +157,266 @@
           enabled: false
           image:            
             repository: '{{ local_container_repo }}/grafana/grafana-image-renderer'            
-            tag: latest            
-            sha: ""            
+            tag: "3.7.0"                        
             pullPolicy: IfNotPresent  
+  
+      alertmanager:
+        enabled: true
+        image: 
+          repository: '{{ local_container_repo }}/bitnami/alertmanager'
+          tag: "0.25.0"
 
-      prometheusOperator:
-        enable: false
-        admissionWebhooks:
-          patch:
-            enabled: true
-            image:
-              registry: '{{ local_container_repo }}'
-              tag: v20221220-controller-v1.5.1-58-g787ea74b6
-              sha: ""
-        image:
-          registry: '{{ local_container_repo }}'   
-        prometheusConfigReloader:
-          image:
-            registry: '{{ local_container_repo }}'
-            repository: prometheus-operator/prometheus-config-reloader
-            # if not set appVersion field from Chart.yaml is used
-            #tag: ""
-            #sha: "" 
-        thanosImage:
+      kube-state-metrics:
+        enabled: true
+        image: 
           registry: '{{ local_container_repo }}'
-          repository: thanos/thanos
-          tag: v0.30.2
-          #sha: ""    
-      prometheus:
-        enable: true
-        ingress:
+          repository: bitnami/kube-state-metrics
+          tag: "2.8.2"          
+        kubeRBACProxy:
           enabled: true
-          ingressClassName: nginx
-          hosts: 
-            - prometheus.dev.local
-          tls: []
-        prometheusSpec:
           image:
             registry: '{{ local_container_repo }}'
-            repository: prometheus/prometheus
-            tag: v2.42.0
-            sha: ""
-         
-          storageSpec:
-            volumeClaimTemplate:
-              metadata: 
-                name: prometheus-nfs-pvc
-                annotations:
-                  nfs.io/storage-path: 'prometheus'  
-              spec:
-                storageClassName: nfs-client
-                accessModes: 
-                  - 'ReadWriteMany'
-                resources:
-                  requests:
-                    storage: 5Gi
-
-          securityContext:
-            runAsNonRoot: false
-            runAsUser: 0
-            runAsGroup: 0
-            fsGroup: 0
-
-          volumes: 
-          # - name: prometheus-config-volume              
-          #   configMap:
-          #     defaultMode: 420
-          #     name: prometheus-server-conf
-
-          volumeMounts: 
-          # - name: prometheus-config-volume
-          #   mountPath: /etc/prometheus
-      thanosRuler:
-        enabled: false             
-        ingress:
-          enabled: false        
-        thanosRulerSpec:
+            repository: bitnami/kube-rbac-proxy
+            tag: 0.14.1
+    
+      prometheus-node-exporter:
+        enable: true
+        image:
+          registry: '{{ local_container_repo }}'
+          repository: bitnami/node-exporter          
+          tag: "1.5.0"
+        kubeRBACProxy:
+          enabled: false
           image:
             registry: '{{ local_container_repo }}'
-            repository: thanos/thanos
-            tag: v0.30.2
-            #sha: ""
+            repository: bitnami/kube-rbac-proxy
+            tag: 0.14.0
+
+      prometheus-pushgateway:
+        enabled: true
+        image:
+          repository: '{{ local_container_repo }}/bitnami/pushgateway'
+          tag: "1.5.1"
+
+  
+
+# - name: Deploy Prometheus Community Stack chart
+#   kubernetes.core.helm:
+#     name: monitoring
+#     binary_path: /usr/local/bin/helm
+#     chart_ref: helm-local/kube-prometheus-stack
+#     create_namespace: true
+#     release_namespace: monitoring
+#     wait: true
+#     values: 
+#       defaultRules:
+#         rules: 
+#           alertmanager:  false
+#           etcd: true
+#           configReloaders: true
+#           general: true
+#           k8s: true
+#           kubeApiserverAvailability: true
+#           kubeApiserverBurnrate: true
+#           kubeApiserverHistogram: true
+#           kubeApiserverSlos: true
+#           kubeControllerManager: true
+#           kubelet: true
+#           kubeProxy: true
+#           kubePrometheusGeneral: true
+#           kubePrometheusNodeRecording: true
+#           kubernetesApps: true
+#           kubernetesResources: true
+#           kubernetesStorage: true
+#           kubernetesSystem: true
+#           kubeSchedulerAlerting: true
+#           kubeSchedulerRecording: true
+#           kubeStateMetrics: true
+#           network: true
+#           node: true
+#           nodeExporterAlerting: false
+#           nodeExporterRecording: true
+#           prometheus: true
+#           prometheusOperator: false
+     
+#       global:
+#         imageRegistry: '{{ local_container_repo }}'
+#       alertmanager:
+#         enabled: false
+#         ingress:
+#           enabled: false  
+#           hosts:
+#             - alertmanager.dev.local 
+#         alertmanagerSpec:
+#           registry: '{{ local_container_repo }}'    
+#           repository: prometheus/alertmanager
+#           tag: v0.25.0
+#           #sha: ""
+#       grafana:
+#         enabled: true
+#         adminUser: 'admin'
+#         adminPassword: 'Pass@word10'
+#         ingress:
+#           enabled: true
+#           ingressClassName: nginx
+#           hosts: 
+#             - grafana.dev.local
+#           tls: []        
+#         image:
+#           repository: '{{ local_container_repo }}/grafana/grafana'
+#         securityContext:
+#           runAsNonRoot: false
+#           runAsUser: 0
+#           runAsGroup: 0
+#           fsGroup: 0  
+#         persistence:
+#           type: pvc
+#           enabled: true
+#           storageClassName: nfs-client
+#           accessModes:
+#             - 'ReadWriteOnce'
+#           size: 5Gi  
+#           annotations:
+#             nfs.io/storage-path: 'grafana'  
+#           finalizers:
+#           - kubernetes.io/pvc-protection  
+#         initChownData:
+#           enabled: true
+#           image:
+#             repository: '{{ local_container_repo }}/library/busybox'
+#             tag: "1.31.1"
+#             sha: ""
+#             pullPolicy: IfNotPresent    
+#           resources: {}
+#             # limits:
+#             #   cpu: 100m
+#             #   memory: 128Mi
+#             # requests:
+#             #   cpu: 100m
+#             #   memory: 128Mi
+#           securityContext:
+#             runAsNonRoot: false
+#             runAsUser: 0
+#             runAsGroup: 0
+#             fsGroup: 0
+#             seccompProfile:
+#               type: RuntimeDefault
+#             capabilities:
+#               add:
+#                 - CHOWN              
+#         sidecar:
+#           dashboards:
+#             enabled: true
+#           image:
+#             repository: '{{ local_container_repo }}/kiwigrid/k8s-sidecar'
+#             tag: 1.22.0
+#             sha: ""
+#           imagePullPolicy: IfNotPresent
+#           resources: {}
+#           # limits:
+#           #   cpu: 100m
+#           #   memory: 100Mi
+#           # requests:
+#           #   cpu: 50m
+#           #   memory: 50Mi
+#           securityContext:
+#             allowPrivilegeEscalation: false
+#             capabilities:
+#               drop:
+#               - ALL
+#             seccompProfile:
+#               type: RuntimeDefault
+#         datasources:
+#           enabled: true
+#           defaultDatasourceEnabled: true
+#           isDefaultDatasource: true
+#           uid: prometheus
+
+#         imageRenderer:
+#           enabled: false
+#           image:            
+#             repository: '{{ local_container_repo }}/grafana/grafana-image-renderer'            
+#             tag: latest            
+#             sha: ""            
+#             pullPolicy: IfNotPresent  
+
+#       prometheusOperator:
+#         enable: false
+#         admissionWebhooks:
+#           patch:
+#             enabled: true
+#             image:
+#               registry: '{{ local_container_repo }}'
+#               tag: v20221220-controller-v1.5.1-58-g787ea74b6
+#               sha: ""
+#         image:
+#           registry: '{{ local_container_repo }}'   
+#         prometheusConfigReloader:
+#           image:
+#             registry: '{{ local_container_repo }}'
+#             repository: prometheus-operator/prometheus-config-reloader
+#             # if not set appVersion field from Chart.yaml is used
+#             #tag: ""
+#             #sha: "" 
+#         thanosImage:
+#           registry: '{{ local_container_repo }}'
+#           repository: thanos/thanos
+#           tag: v0.30.2
+#           #sha: ""    
+#       prometheus:
+#         enable: true
+#         ingress:
+#           enabled: true
+#           ingressClassName: nginx
+#           hosts: 
+#             - prometheus.dev.local
+#           tls: []
+#         prometheusSpec:
+#           image:
+#             registry: '{{ local_container_repo }}'
+#             repository: prometheus/prometheus
+#             tag: v2.42.0
+#             sha: ""
+          
+#           configMaps: 
+#             - prometheus-server-conf
+
+#           storageSpec:
+#             volumeClaimTemplate:
+#               metadata: 
+#                 name: prometheus-nfs-pvc
+#                 annotations:
+#                   nfs.io/storage-path: 'prometheus'  
+#               spec:
+#                 storageClassName: nfs-client
+#                 accessModes: 
+#                   - 'ReadWriteMany'
+#                 resources:
+#                   requests:
+#                     storage: 5Gi
+
+#           securityContext:
+#             runAsNonRoot: false
+#             runAsUser: 0
+#             runAsGroup: 0
+#             fsGroup: 0
+
+#           volumes: 
+#           # - name: prometheus-config-volume              
+#           #   configMap:
+#           #     defaultMode: 420
+#           #     name: prometheus-server-conf
+
+#           volumeMounts: 
+#           # - name: prometheus-config-volume
+#           #   mountPath: /etc/prometheus
+#       thanosRuler:
+#         enabled: false             
+#         ingress:
+#           enabled: false        
+#         thanosRulerSpec:
+#           image:
+#             registry: '{{ local_container_repo }}'
+#             repository: thanos/thanos
+#             tag: v0.30.2
+#             #sha: ""
