@@ -64,107 +64,51 @@
             nfs.io/storage-path: 'prometheus' 
           accessModes:
             - ReadWriteMany
-          existingClaim: ""
-          mountPath: /data
+          existingClaim: ''
+          mountPath: '/data'
           size: 5Gi  
-          storageClass: "nfs-client"
+          storageClass: 'nfs-client'
         securityContext:
           runAsUser: 0
           runAsNonRoot: false
           runAsGroup: 0
           fsGroup: 0
-      grafana:
-        enabled: true
-        adminUser: 'admin'
-        adminPassword: 'Pass@word10'
-        ingress:
-          enabled: true
-          ingressClassName: nginx
-          hosts: 
-            - grafana.dev.local
-          tls: []        
-        image:
-          repository: '{{ local_container_repo }}/grafana/grafana'
-          tag: "v8.2.6"
-        securityContext:
-          runAsNonRoot: false
-          runAsUser: 0
-          runAsGroup: 0
-          fsGroup: 0  
-        persistence:
-          type: pvc
-          enabled: true
-          storageClassName: nfs-client
-          accessModes:
-            - 'ReadWriteOnce'
-          size: 5Gi  
-          annotations:
-            nfs.io/storage-path: 'grafana'  
-          finalizers:
-          - kubernetes.io/pvc-protection  
-        initChownData:
-          enabled: true
-          image:
-            repository: '{{ local_container_repo }}/busybox'
-            tag: "1.36.0"
-            sha: ""
-            pullPolicy: IfNotPresent    
-          resources: {}
-            # limits:
-            #   cpu: 100m
-            #   memory: 128Mi
-            # requests:
-            #   cpu: 100m
-            #   memory: 128Mi
-          securityContext:
-            runAsNonRoot: false
-            runAsUser: 0
-            runAsGroup: 0
-            fsGroup: 0
-            seccompProfile:
-              type: RuntimeDefault
-            capabilities:
-              add:
-                - CHOWN              
-        sidecar:
-          dashboards:
-            enabled: true
-          image:
-            repository: '{{ local_container_repo }}/kiwigrid/k8s-sidecar'
-            tag: 1.23.3            
-          imagePullPolicy: IfNotPresent
-          resources: {}
-          # limits:
-          #   cpu: 100m
-          #   memory: 100Mi
-          # requests:
-          #   cpu: 50m
-          #   memory: 50Mi
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-              - ALL
-            seccompProfile:
-              type: RuntimeDefault
-        datasources:
-          enabled: true
-          defaultDatasourceEnabled: true
-          isDefaultDatasource: true
-          uid: prometheus
+      
 
-        imageRenderer:
-          enabled: false
-          image:            
-            repository: '{{ local_container_repo }}/grafana/grafana-image-renderer'            
-            tag: "3.7.0"                        
-            pullPolicy: IfNotPresent  
-  
       alertmanager:
-        enabled: true
+        enabled: false
         image: 
           repository: '{{ local_container_repo }}/bitnami/alertmanager'
-          tag: "0.25.0"
+          tag: '0.25.0'
+
+        persistence:
+          enabled: true
+          storageClass: 'nfs-client'
+          annotations: 
+            nfs.io/storage-path: 'alertmanager'
+          accessModes:
+            - ReadWriteMany
+          size: 5Gi
+
+        securityContext:
+          runAsUser: 65534
+          runAsNonRoot: true
+          runAsGroup: 65534          
+
+        podSecurityContext:          
+          fsGroup: 0
+
+        ingress:
+          enabled: false
+          className: nginx1
+          annotations: 
+            kubernetes.io/ingress.class: nginx            
+          hosts:
+            - host: alertmanager.delv.local
+              paths:
+                - path: /
+                  pathType: ImplementationSpecific
+          tls: []                    
 
       kube-state-metrics:
         enabled: true
@@ -198,7 +142,141 @@
           repository: '{{ local_container_repo }}/bitnami/pushgateway'
           tag: "1.5.1"
 
+- name: Deploy Grafana and included compoonents
+  kubernetes.core.helm:
+    name: grafana
+    binary_path: /usr/local/bin/helm
+    chart_ref: helm-local/grafana
+    create_namespace: true
+    release_namespace: monitoring
+    wait: true
+    values:
+      adminUser: 'admin'
+      adminPassword: 'Pass@word10'
+      
+      image:
+        repository: '{{ local_container_repo }}/grafana/grafana'
+        tag: '9.5.1'
+
+      securityContext:
+        runAsNonRoot: false
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+
+      containerSecurityContext:
+        capabilities:
+          drop:
+          - ALL
+        seccompProfile:
+          type: RuntimeDefault
+
+      createConfigmap: true
+
+      downloadDashboardsImage:
+        repository: '{{ local_container_repo }}/curlimages/curl'
+        tag: 7.85.0
   
+      downloadDashboards:
+        env: {}
+        envFromSecret: ""
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          seccompProfile:
+            type: RuntimeDefault
+        envValueFrom: {}
+
+      ingress:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          kubernetes.io/ingress.class: nginx            
+        hosts: 
+          - grafana.dev.local
+        tls: [] 
+
+        resources: {}
+          #  limits:
+          #    cpu: 100m
+          #    memory: 128Mi
+          #  requests:
+          #    cpu: 100m
+          #    memory: 128Mi
+
+      persistence:
+        type: pvc
+        enabled: true
+        storageClassName: nfs-client
+        accessModes:
+          - 'ReadWriteOnce'
+        size: 5Gi  
+        annotations:
+          nfs.io/storage-path: 'grafana'  
+        finalizers:
+        - kubernetes.io/pvc-protection
+
+      initChownData:
+        enabled: true
+        image:
+          repository: '{{ local_container_repo }}/busybox'
+          tag: "1.36.0"
+          sha: ""
+          pullPolicy: IfNotPresent    
+        resources: {}
+          # limits:
+          #   cpu: 100m
+          #   memory: 128Mi
+          # requests:
+          #   cpu: 100m
+          #   memory: 128Mi
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+          seccompProfile:
+            type: RuntimeDefault
+          capabilities:
+            add:
+              - CHOWN              
+                        
+      sidecar:
+        dashboards:
+          enabled: true
+        image:
+          repository: '{{ local_container_repo }}/kiwigrid/k8s-sidecar'
+          tag: 1.23.3            
+        imagePullPolicy: IfNotPresent
+        resources: {}
+        # limits:
+        #   cpu: 100m
+        #   memory: 100Mi
+        # requests:
+        #   cpu: 50m
+        #   memory: 50Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          seccompProfile:
+            type: RuntimeDefault
+      datasources:
+        enabled: true
+        defaultDatasourceEnabled: true
+        isDefaultDatasource: true
+        uid: prometheus
+
+      imageRenderer:
+        enabled: false
+        image:            
+          repository: '{{ local_container_repo }}/grafana/grafana-image-renderer'            
+          tag: "3.7.0"                        
+          pullPolicy: IfNotPresent  
+  
+
 
 # - name: Deploy Prometheus Community Stack chart
 #   kubernetes.core.helm:

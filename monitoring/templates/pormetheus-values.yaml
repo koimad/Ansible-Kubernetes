@@ -1115,6 +1115,9 @@ alertmanager:
     runAsGroup: 65534
     fsGroup: 65534
 
+
+    
+
 ## kube-state-metrics sub-chart configurable values
 ## Please see https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-state-metrics
 ##
