@@ -1,8 +1,14 @@
 ---
-- name: Create Config Map for Prometheus
+
+- name: Config Map Kubernetes Nginx Ingress Prometheus NextGen2
   kubernetes.core.k8s:
     state: present
-    definition: "{{ lookup('file', 'config-map.yaml') | from_yaml }}"
+    definition: "{{ lookup('file', 'dashboards/dashboard-one.yaml') | from_yaml }}"
+
+- name: Config Map Kubernetes Deployment Statefulset Daemonset metrics
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('file', 'dashboards/dashboard-two.yaml') | from_yaml }}"
 
 - name: Add Local Chart Repo
   kubernetes.core.helm_repository:
@@ -263,11 +269,19 @@
             - ALL
           seccompProfile:
             type: RuntimeDefault
+      
       datasources:
-        enabled: true
-        defaultDatasourceEnabled: true
-        isDefaultDatasource: true
-        uid: prometheus
+        datasources.yaml:
+          apiVersion: 1
+          datasources:
+           - name: 'Prometheus'
+             type: 'prometheus'
+             url: 'http://prometheus.dev.local'
+             access: 'proxy'
+             isDefault: true
+             editable: false
+             orgId: 1
+             version: 1  
 
       imageRenderer:
         enabled: false
@@ -276,7 +290,6 @@
           tag: "3.7.0"                        
           pullPolicy: IfNotPresent  
   
-
 
 # - name: Deploy Prometheus Community Stack chart
 #   kubernetes.core.helm:

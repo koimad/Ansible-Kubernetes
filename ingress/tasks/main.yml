@@ -18,3 +18,8 @@
       controller:
         image:
           repository: '{{ local_container_repo }}/nginx/nginx-ingress'
+        metrics:
+          enable: true
+          service:
+            prometheus.io/scrape: true
+            prometheus.io/port: "10254"

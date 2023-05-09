@@ -1,9 +1,0 @@
-- name: Copy Grafana Files
-  copy:
-    src: '{{ item }}'
-    dest: '~/grafana/'
-    owner: root
-    group: root
-    mode: 0644
-  with_fileglob:
-    - files/*

@@ -1,9 +1,0 @@
-- name: Copy Prometheus Files
-  copy:
-    src: '{{ item }}'
-    dest: '~/prometheus/'
-    owner: root
-    group: root
-    mode: 0644
-  with_fileglob:
-    - files/*
