@@ -35,13 +35,19 @@
   - role: worker-nodes
   tags: WorkerNodes
 
-- name: Configure Calico Firewalls & Applications
+- name: Configure Calico Firewalls, Storage & Applications
   hosts: masters
   become: true
   roles:
   #- role: calico-firewall
-  #- role: metallb
-  #- role: ingress
-  - role: nfs-subdir
-  - role: monitoring
+  - role: metallb
+  - role: ingress
+  - role: nfs-subdir  
   tags: Applications
+
+- name: Monitoring Applications
+  hosts: masters
+  become: true
+  roles:  
+  - role: monitoring
+  tags: Monitoring

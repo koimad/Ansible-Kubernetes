@@ -29,6 +29,14 @@
     replace: '{{ pod_network_cidr }}'
   ignore_errors: True                              
 
+- name: Configure cri-o pause container to use correct repo and version to match kubernetes
+  ansible.builtin.replace:
+    path: /etc/crio/crio.conf
+    regexp: '# pause_image = "registry.k8s.io/pause:3.6"'
+    replace: 'pause_image = "{{ kubernetes_repository }}/pause:3.9"'
+  ignore_errors: True                              
+
+
 - name: Start and enable crio service
   ansible.builtin.service:
     name: crio

@@ -118,32 +118,33 @@
 
       kube-state-metrics:
         enabled: true
+        annotations: 
+          prometheus.io/scrape: 'true'
+          prometheus.io/port: '8080'
+          prometheus.io/path: '/metrics'
+          prometheus.io/scheme: 'http'
         image: 
-          registry: '{{ local_container_repo }}'
-          repository: bitnami/kube-state-metrics
+          repository: '{{ local_container_repo }}/bitnami/kube-state-metrics'
           tag: "2.8.2"          
         kubeRBACProxy:
           enabled: true
-          image:
-            registry: '{{ local_container_repo }}'
-            repository: bitnami/kube-rbac-proxy
+          image:            
+            repository: '{{ local_container_repo }}/bitnami/kube-rbac-proxy'
             tag: 0.14.1
-    
+      
       prometheus-node-exporter:
-        enable: true
-        image:
-          registry: '{{ local_container_repo }}'
-          repository: bitnami/node-exporter          
+        enabled: true
+        image:          
+          repository: '{{ local_container_repo }}/bitnami/node-exporter'
           tag: "1.5.0"
         kubeRBACProxy:
           enabled: false
-          image:
-            registry: '{{ local_container_repo }}'
-            repository: bitnami/kube-rbac-proxy
+          image:            
+            repository: '{{ local_container_repo }}/bitnami/kube-rbac-proxy'
             tag: 0.14.0
 
       prometheus-pushgateway:
-        enabled: true
+        enabled: false
         image:
           repository: '{{ local_container_repo }}/bitnami/pushgateway'
           tag: "1.5.1"
@@ -226,7 +227,7 @@
         - kubernetes.io/pvc-protection
 
       initChownData:
-        enabled: true
+        enabled: false
         image:
           repository: '{{ local_container_repo }}/busybox'
           tag: "1.36.0"
