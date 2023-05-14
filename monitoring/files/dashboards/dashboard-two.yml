@@ -1,21 +1,21 @@
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: sample-grafana-dashboard
+  name: kubernetes-grafana-dashboard
   namespace: monitoring
   labels:
-     grafana_dashboard: "1"
+    grafana_dashboard: "2"
+  annotations:
+    k8s-sidecar-target-directory: '/tmp/dashboards'      
 data:
-  k8s-dashboard.json: |-
+  nginx-metrics-dashboard.json: |-
     {
     "annotations": {
       "list": [
         {
           "builtIn": 1,
-          "datasource": {
-            "type": "datasource",
-            "uid": "grafana"
-          },
+          "datasource": "prometheus",
           "enable": true,
           "hide": true,
           "iconColor": "rgba(0, 211, 255, 1)",

@@ -1,18 +1,21 @@
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: sample-grafana-dashboard
+  name: nginx-grafana-dashboard
   namespace: monitoring
   labels:
-     grafana_dashboard: "1"
+    grafana_dashboard: "1"
+  annotations:
+    k8s-sidecar-target-directory: '/tmp/dashboards'   
 data:
-  k8s-dashboard.json: |-
+  prom-metrics-dashboard.json: |-
     {
       "annotations": {
         "list": [
           {
             "builtIn": 1,
-            "datasource": "Prometheus",
+            "datasource": "prometheus",
             "enable": true,
             "hide": true,
             "iconColor": "rgba(0, 211, 255, 1)",
@@ -45,7 +48,7 @@ data:
         },
         {
           "cacheTimeout": null,
-          "datasource": "Prometheus",
+          "datasource": "prometheus",
           "description": "Status of the last NGINX reload.",
           "fieldConfig": {
             "defaults": {
@@ -147,7 +150,7 @@ data:
         },
         {
           "cacheTimeout": null,
-          "datasource": "Prometheus",
+          "datasource": "prometheus",
           "description": "Number of successful NGINX Plus reloads.",
           "fieldConfig": {
             "defaults": {
@@ -220,7 +223,7 @@ data:
         },
         {
           "cacheTimeout": null,
-          "datasource": "Prometheus",
+          "datasource": "prometheus",
           "description": "Number of unsuccessful NGINX Plus reloads.",
           "fieldConfig": {
             "defaults": {
@@ -303,7 +306,7 @@ data:
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "Prometheus",
+          "datasource": "prometheus",
           "decimals": 2,
           "description": "Bytes received from clients and sent to clients.",
           "editable": true,
@@ -425,7 +428,7 @@ data:
           }
         },
         {
-          "datasource": "Prometheus",
+          "datasource": "prometheus",
           "description": "Last controller reload milliseconds.",
           "fieldConfig": {
             "defaults": {
@@ -501,7 +504,7 @@ data:
           "panels": [
             {
               "cacheTimeout": null,
-              "datasource": "Prometheus",
+              "datasource": "prometheus",
               "description": "Total http requests per second looking back over the last 5 minutes.",
               "fieldConfig": {
                 "defaults": {
@@ -570,7 +573,7 @@ data:
               "type": "stat"
             },
             {
-              "datasource": "Prometheus",
+              "datasource": "prometheus",
               "description": "Total number of deployed Ingress .",
               "fieldConfig": {
                 "defaults": {
@@ -626,7 +629,7 @@ data:
               "type": "stat"
             },
             {
-              "datasource": "Prometheus",
+              "datasource": "prometheus",
               "description": "Total http requests per second looking back over the last 5 minutes across all server zones.",
               "fieldConfig": {
                 "defaults": {
@@ -695,7 +698,7 @@ data:
               "type": "stat"
             },
             {
-              "datasource": "Prometheus",
+              "datasource": "prometheus",
               "fieldConfig": {
                 "defaults": {
                   "custom": {},
@@ -918,7 +921,7 @@ data:
               "bars": false,
               "dashLength": 10,
               "dashes": false,
-              "datasource": "Prometheus",
+              "datasource": "prometheus",
               "decimals": 0,
               "description": " 4|5xx response status codes.",
               "editable": false,
@@ -1041,7 +1044,7 @@ data:
               }
             },
             {
-              "datasource": "Prometheus",
+              "datasource": "prometheus",
               "description": "Current State of the NGINX Ingress Controller.",
               "fieldConfig": {
                 "defaults": {
@@ -1138,7 +1141,7 @@ data:
             },
             {
               "cacheTimeout": null,
-              "datasource": "Prometheus",
+              "datasource": "prometheus",
               "description": "Non-4|5xx response status codes divided by total number of response status codes.",
               "fieldConfig": {
                 "defaults": {
@@ -1244,7 +1247,7 @@ data:
               "bars": false,
               "dashLength": 10,
               "dashes": false,
-              "datasource": "Prometheus",
+              "datasource": "prometheus",
               "description": "Upstream success rate Over Time.",
               "fieldConfig": {
                 "defaults": {
@@ -1350,7 +1353,7 @@ data:
               }
             },
             {
-              "datasource": "Prometheus",
+              "datasource": "prometheus",
               "description": "Total number of upstream servers.",
               "fieldConfig": {
                 "defaults": {
@@ -1428,7 +1431,7 @@ data:
               "bars": false,
               "dashLength": 10,
               "dashes": false,
-              "datasource": "Prometheus",
+              "datasource": "prometheus",
               "description": " 4|5xx Status Codes",
               "fieldConfig": {
                 "defaults": {
@@ -1527,7 +1530,7 @@ data:
               }
             },
             {
-              "datasource": "Prometheus",
+              "datasource": "prometheus",
               "description": "Current State of the upstream servers.",
               "fieldConfig": {
                 "defaults": {
@@ -1931,3 +1934,4 @@ data:
       "uid": "VUwGrLVMz",
       "version": 5
     }
+    
