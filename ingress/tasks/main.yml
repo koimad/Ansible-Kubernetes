@@ -15,11 +15,18 @@
     release_namespace: nginx-ingress
     wait: true
     values: 
-      controller:
+      controller:        
         image:
           repository: '{{ local_container_repo }}/nginx/nginx-ingress'
           tag: "3.1.0"
+        pod:
+          annotations:
+            prometheus.io/scrape: "true"
+            prometheus.io/path: /metrics
+            prometheus.io/port: "9113"  
       prometheus:       
-        create: false        
+        create: true        
         port: 9113
         scheme: http
+
+         
