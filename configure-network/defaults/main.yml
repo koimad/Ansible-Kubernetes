@@ -1,5 +1,5 @@
 ---
 # Required Kernel Loaded Modules.
-kernel_modules:
+configure_network_kernel_modules:
   - br_netfilter
   - overlay

@@ -32,11 +32,11 @@ all:
     ansible_user: brian
     ansible_connection: ssh
     
-    ca_path:
-      RedHat:
-        7: /etc/pki/ca-trust/source/anchors
-        8: /etc/pki/ca-trust/source/anchors  
-        9: /etc/pki/ca-trust/source/anchors
+    # configure_crio_ca_path:
+    #   RedHat:
+    #     7: /etc/pki/ca-trust/source/anchors
+    #     8: /etc/pki/ca-trust/source/anchors  
+    #     9: /etc/pki/ca-trust/source/anchors
 
     local_repository_host: dev-dc01.dev.local
     local_container_repo: '{{ local_repository_host }}:8444'
@@ -74,8 +74,15 @@ all:
       - 51821/udp
       - 2379/tcp         
 
+    #crio version & OS
+    crio_os: 'CentOS_8_Stream'
+    configure_crio_crio_os: '{{  crio_os }}'
+    configure_crio_crio_version: "1.26"
+
     # Kebernetes pod CIDR and service CIDR, should not cause clash with host networks CIDR
     pod_network_cidr: 192.160.0.0/16
+    configure_crio_pod_network_cidr: '{{ pod_network_cidr }}'
+
     service_subnet_cidr: 10.96.0.0/12
 
 
@@ -94,7 +101,7 @@ all:
     kubernetes_yum_repo:  '{{ local_repository_base_url }}/repository/google/kubernetes-el7-x86_64'
     
     # Opensuse repo url for downloading kubernetes required yum packages
-    opensuse_yum_repo: '{{ local_repository_base_url }}/repository/opensuse/{{ crioOS }}'
+    configure_crio_open_suse_yum_repo: '{{ local_repository_base_url }}/repository/opensuse/{{ crio_os }}'
 
     # Python Repository 
     local_python_repository: '{{ local_repository_base_url }}/repository/Python'

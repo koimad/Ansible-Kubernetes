@@ -6,7 +6,7 @@
     port: "{{ item }}"
     permanent: yes
     state: enabled
-  with_items: '{{ fire_wall_ports }}'
+  with_items: '{{ configure_firewall_firewall_ports }}'
 
 - name: Reload firewalld
   shell: firewall-cmd --reload  

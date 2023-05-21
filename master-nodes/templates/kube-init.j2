@@ -34,6 +34,6 @@ kubernetesVersion: 1.27.1
 networking:
   dnsDomain: cluster.local
   serviceSubnet: {{ service_subnet_cidr }}
-  podSubnet: {{ pod_network_cidr }} # --pod-network-cidr
+  podSubnet: {{ configure_crio_pod_network_cidr }} # --pod-network-cidr
 scheduler: {}
 

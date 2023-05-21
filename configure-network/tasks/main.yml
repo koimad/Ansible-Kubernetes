@@ -6,7 +6,7 @@
     name: "{{ item }}"
     state: present
   with_items:
-    - "{{ kernel_modules }}"      
+    - "{{ configure_network_kernel_modules }}"      
 
 - name: Ensure File k8s.conf exists
   ansible.builtin.copy:
@@ -20,7 +20,7 @@
     line: "{{ item }}"
   check_mode: no  
   with_items:
-    - "{{ kernel_modules }}" 
+    - "{{ configure_network_kernel_modules }}" 
 
   
 - name: Setup required sysctl params

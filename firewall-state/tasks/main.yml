@@ -1,0 +1,19 @@
+---
+
+- debug:
+    msg: "Setting the fire wall state to  {{ firewall_state_service_state }}"
+
+- name: Set Firewall To Stopped
+  command: systemctl stop firewalld.service
+  when: firewall_state_service_state == "disable"
+
+- name: Set Firewall Service State
+  command: systemctl {{firewall_state_service_state}} firewalld.service
+
+- name: Set Firewall To Started
+  command: systemctl start firewalld.service
+  when: firewall_state_service_state != "disable"
+
+
+
+
