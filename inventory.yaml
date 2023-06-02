@@ -40,13 +40,18 @@ all:
 
     local_repository_host: dev-dc01.dev.local
     local_container_repo: '{{ local_repository_host }}:8444'
+    metallb_container_repo: '{{ local_container_repo }}'
+    monitoring_container_repo: '{{ local_container_repo }}'
+    nfs_subdir_container_repo: '{{ local_container_repo }}'
 
     calico_docker_repository: '{{ local_container_repo }}'  
     #calico_docker_repository: "quay.io"  
+    master_calico_docker_repository: '{{ calico_docker_repository }}'
     
     kubernetes_repository: '{{ local_container_repo }}'
     #kubernetes_repository: 'registry.k8s.io'  
-       
+    master_kubernetes_repository: '{{ kubernetes_repository }}'
+         
     master_firewall_ports:        
       - 80/tcp
       - 443/tcp
@@ -82,13 +87,14 @@ all:
     # Kebernetes pod CIDR and service CIDR, should not cause clash with host networks CIDR
     pod_network_cidr: 192.160.0.0/16
     configure_crio_pod_network_cidr: '{{ pod_network_cidr }}'
-
+    master_nodes_pod_network_cidr: '{{ pod_network_cidr }}'
     service_subnet_cidr: 10.96.0.0/12
 
 
     # Calico Pod Network CIDR should be a subnet of pod_network_cidr
     calico_pod_cidr: 192.160.0.0/18 
-    
+    master_nodes_calico_pod_cidr: '{{ calico_pod_cidr }}'
+
     hosts_cidr: 192.168.0.0/24
 
     masterNode: redhat-8-c1-cp1
@@ -98,7 +104,7 @@ all:
     local_repository_base_url: https://{{ local_repository_host }}:8443
 
     # Kebernetes repo url for downloading kubernetes required yum packages
-    kubernetes_yum_repo:  '{{ local_repository_base_url }}/repository/google/kubernetes-el7-x86_64'
+    install_k8s_kubernetes_yum_repo:  '{{ local_repository_base_url }}/repository/google/kubernetes-el7-x86_64'
     
     # Opensuse repo url for downloading kubernetes required yum packages
     configure_crio_open_suse_yum_repo: '{{ local_repository_base_url }}/repository/opensuse/{{ crio_os }}'
@@ -108,3 +114,19 @@ all:
 
     #Local Helm Repo
     local_helm_repository: '{{ local_repository_base_url }}/repository/helm-local'
+    metallb_helm_repository: '{{ local_helm_repository }}'
+    monitoring_helm_repository: '{{ local_helm_repository }}'
+    nfs_subdir_helm_repository: '{{ local_helm_repository }}'
+
+    monitoring_prometheus_host: 'prometheus.dev.local'
+    monitoring_prometheus_url:  'http://{{ monitoring_prometheus_host }}'
+    
+    monitoring_grafana_host:  'grafana.dev.local'
+    monitoring_grafana_url:  'http://{{ monitoring_grafana_host }}'
+
+    nfs_subdir_nfs_server: '192.168.0.211'
+    nfs_subdir_nfs_path: '/data'
+
+    pre_setup_trusted_host: '{{ local_repository_host }}'
+    pre_setup_python_repository: '{{ local_repository_base_url}}/repository/python-group'    
+      

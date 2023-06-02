@@ -9,7 +9,7 @@
   kubernetes.core.helm_repository:
     name: helm-local
     binary_path: /usr/local/bin/helm
-    repo_url: '{{ local_helm_repository }}'
+    repo_url: '{{ monitoring_helm_repository }}'
     state: present
 
 - include_tasks: prometheus-basic.yml

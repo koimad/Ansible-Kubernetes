@@ -3,7 +3,7 @@
   kubernetes.core.helm_repository:
     name: helm-local
     binary_path: /usr/local/bin/helm
-    repo_url: '{{ local_helm_repository }}'
+    repo_url: '{{ metallb_helm_repository }}'
     state: present
 
 - name: Deploy Metallb helm chart
@@ -17,11 +17,11 @@
     values: 
       controller:
         image:
-          repository: '{{ local_container_repo }}/metallb/controller'
+          repository: '{{ metallb_container_repo }}/metallb/controller'
           tag: v0.13.9
       speaker:
         image:
-          repository: '{{ local_container_repo }}/metallb/speaker' 
+          repository: '{{ metallb_container_repo }}/metallb/speaker' 
           tag: v0.13.9   
 
 - name: Create Metallb IP Address Range and Advertise

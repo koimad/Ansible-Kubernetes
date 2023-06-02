@@ -3,7 +3,7 @@
   kubernetes.core.helm_repository:
     name: helm-local
     binary_path: /usr/local/bin/helm
-    repo_url: '{{ local_helm_repository }}'
+    repo_url: '{{ nfs_subdir_helm_repository }}'
     state: present
 
 - name: NFS Subdirectory External Provisioner
@@ -16,11 +16,11 @@
     wait: true
     values: 
       image: 
-        repository: '{{ local_container_repo }}/sig-storage/nfs-subdir-external-provisioner'
+        repository: '{{ nfs_subdir_container_repo }}/sig-storage/nfs-subdir-external-provisioner'
         tag: 'v4.0.2'
       nfs:
-        server: '192.168.0.211'
-        path:  '/data' 
+        server: '{{ nfs_subdir_nfs_server }}'
+        path:  '{{ nfs_subdir_nfs_path}}' 
       storageClass:
         reclaimPolicy: Retain
         archiveOnDelete: false

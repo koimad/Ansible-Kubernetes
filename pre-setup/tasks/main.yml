@@ -1,34 +1,10 @@
 ---
-# - name: Update system packages block
-#   block:
-#     - name: Update system packages
-#       package:
-#         name: "*"
-#         state: latest
-#   # Update may fail try to repair with disable and enable of repos.      
-#   rescue:
-#     - name: disable repos
-#       command: "subscription-manager repos --disable {{ item }}"
-#       with_items:
-#       - rhel-8-for-x86_64-appstream-rpms
-#       - rhel-8-for-x86_64-baseos-rpms
-  
-#     - name: enable repos
-#       command: "subscription-manager repos --enable {{ item }}"  
-#       with_items:
-#       - rhel-8-for-x86_64-appstream-rpms
-#       - rhel-8-for-x86_64-baseos-rpms
-
-#     - name: Update system packages
-#       package:
-#         name: "*"
-#         state: latest
 
 - name: Install some packages needed to configure the nodes
   ansible.builtin.package:
     name: "{{ item }}"
   with_items:
-    - "{{ basic_packages }}"    
+    - "{{ pre_setup_basic_packages }}"    
 
 - name: Copy Root Certificates into the anchors folder  
   copy:
@@ -50,4 +26,3 @@
     name: kubernetes        
     state: present
     executable: pip3
-       

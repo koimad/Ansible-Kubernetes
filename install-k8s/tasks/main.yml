@@ -9,7 +9,7 @@
   yum_repository:
     name: Google
     description: Google YUM repository
-    baseurl: '{{ kubernetes_yum_repo }}'
+    baseurl: '{{ install_k8s_kubernetes_yum_repo }}'
     gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-google
     gpgcheck: yes
     repo_gpgcheck: 1

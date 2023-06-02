@@ -1,12 +1,43 @@
+# Install Ansible on the required host
+To install Ansible using the local nexus repo follow the steps below
+   1. Update the host machines CA's to include the certificate of the nexus repo
+   2. Create the file /etc/pki/ca-trust/source/anchors/localca.crt with the contents of the root ca's public certificate
+   3. Run the following command
+        ```
+            update-ca-trust
+        ```
+   4. Create the file /etc/pip.conf with the following settings
+        ```
+            [global]
+            index=https://dev-dc01.dev.local:8443/repository/python-group/pypi
+            index-url=https://dev-dc01.dev.local:8443/repository/python-group/simple
+            trusted-host=dev-dc01.dev.local
+        ```
+   5. Update pip
+        ```
+            python3 -m pip install --upgrade pip
+        ```
+   6. Install  setuptools-rust
+        ```
+            python3 -m pip install setuptools-rust
+        ```            
+   7. Install wheel
+        ```            
+            python3 -m pip install wheel
+        ```            
+   8. Install Ansible
+        ```
+             python3 -m pip install ansible
+        ```        
+
 # Ansible-Kubernetes
-
-This will setup a kubernetes cluster on RedHat 8.6 machines using ansible. The playbook can be used in an offline environment if a suitable container repository is setup with the required container images. I have used a Nexus OSS repository for docker inmages configured as below. 
-
+This will setup a kubernetes cluster on RedHat 8.x machines using ansible. The playbook can be used in an offline environment if a suitable container repository is setup with the required container images. I have used a Nexus OSS repository for docker inmages configured as below. 
+```
     docker-group  (exposed port 8444 for direct connection - (Kubernetes does not support paths in the url to the repo)
         - docker-proxy-registry-1.docker.io
         - docker-proxy-quay.io
         - docker-proxy-registry-k8s-io
-
+```    
 With using a local repository, I've used a custom config file for initialising the kubernetes cluster so that the repositories can be updated to use my local repo. 
 
 ## Platform requirements

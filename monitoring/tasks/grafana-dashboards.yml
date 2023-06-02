@@ -1,14 +1,4 @@
 ---
-# - name: Config Map Kubernetes Nginx Ingress Prometheus NextGen2
-#   kubernetes.core.k8s:
-#     state: present
-#     definition: "{{ lookup('file', 'dashboards/dashboard-one.yaml') | from_yaml }}"
-
-# - name: Config Map Kubernetes Deployment Statefulset Daemonset metrics
-#   kubernetes.core.k8s:
-#     state: present
-#     definition: "{{ lookup('file', 'dashboards/dashboard-two.yaml') | from_yaml }}"
-
 - name: Install all the dashboards
   kubernetes.core.k8s:
     state: present

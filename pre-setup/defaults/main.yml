@@ -1,7 +1,7 @@
 ---
 # Basic backages required for installation
-basic_packages:
+pre_setup_basic_packages:
   - iproute-tc
 
-local_repository_host: dev-dc01.dev.local
-local_python_repository: https://{{ local_repository_host }}:8443/repository/Python  
+pre_setup_trusted_host: ''
+pre_setup_python_repository: ''

@@ -1,0 +1,6 @@
+---
+nfs_subdir_container_repo: ''
+nfs_subdir_helm_repository: ''
+
+nfs_subdir_nfs_server: '192.168.0.211'
+nfs_subdir_nfs_path: '/data'
