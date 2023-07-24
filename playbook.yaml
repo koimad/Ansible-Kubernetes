@@ -13,7 +13,7 @@
   #    firewall_state_service_state: "enable"
    - role: configure-crio
    - role: install-k8s
-  # - role: groups_and_users
+   
   tags: Prerequisites
 
 - name: Install Master Nodes
@@ -35,7 +35,7 @@
   - role: worker-nodes
   tags: WorkerNodes
 
-- name: Configure Calico Firewalls, Storage & Applications
+- name: Configure Calico Firewalls, Storage & Ingress and Load Balancing
   hosts: masters
   become: true
   roles:
@@ -51,3 +51,19 @@
   roles:  
   - role: monitoring
   tags: Monitoring
+
+# - name: Pre ECA Items All Hosts
+#   hosts: all
+#   become: true
+#   roles:
+#     - role: groups_and_users
+#   tags: Pre_ECA
+
+- name: Pre ECA Items Master Node
+  hosts: masters
+  become: true
+  roles:
+    - role: groups_and_users
+    - role: network_shares
+
+  tags: Pre_ECA  

@@ -24,6 +24,7 @@
       storageClass:
         reclaimPolicy: Retain
         archiveOnDelete: false
-        pathPattern: '${.PVC.namespace}-${.PVC.name}/${.PVC.annotations.nfs.io/storage-path}'
+        pathPattern: '${.PVC.annotations.nfs.io/storage-path}'
+        #pathPattern: '${.PVC.namespace}-${.PVC.name}/${.PVC.annotations.nfs.io/storage-path}'
         accessModes: ReadWriteMany
         volumeBindingMode: Immediate

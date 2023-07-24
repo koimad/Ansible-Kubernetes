@@ -7,7 +7,7 @@
     binary_path: /usr/local/bin/helm
     chart_ref: helm-local/prometheus
     create_namespace: true
-    release_namespace: monitoring
+    release_namespace: '{{ monitoring_namespace }}'
     wait: true
     values: 
       configmapReload:
@@ -17,6 +17,14 @@
             repository: '{{ monitoring_container_repo }}/prometheus-operator/prometheus-config-reloader'
             tag: v0.65.1          
             pullPolicy: IfNotPresent
+
+          extraConfigmapMounts:
+            - name: certs-configmap
+              mountPath: /etc/ssl/certs/my-company.pem
+              subPath: my-company.pem # (optional)
+              configMap: ca-bundle
+              readOnly: true     
+
       server:
         name: server
         image:
@@ -32,19 +40,22 @@
           scrape_interval: 1m
           scrape_timeout: 10s
           evaluation_interval: 1m
-        extraConfigmapMounts: []
-        #  - name: prometheus-config-volume
-        #    mountPath: /etc/config/prometheus
-        #    subPath: ""
-        #    configMap: prometheus-server-conf
-        #    readOnly: true          
+        extraConfigmapMounts:
+          - name: certs-configmap
+            mountPath: /etc/ssl/certs/my-company.pem
+            subPath: my-company.pem # (optional)
+            configMap: ca-bundle
+            readOnly: true  
         ingress:
           enabled: true  
           annotations: 
             kubernetes.io/ingress.class: nginx
           hosts:
             - '{{ monitoring_prometheus_host }}'
-          tls: []
+          tls:                   
+            - secretName: prometheus-cert
+              hosts:
+                - '{{ monitoring_prometheus_host }}'
         strategy:
           type: Recreate  
         persistentVolume:
@@ -93,7 +104,7 @@
           annotations: 
             kubernetes.io/ingress.class: nginx            
           hosts:
-            - host: alertmanager.delv.local
+            - host: alertmanager.dev.local
               paths:
                 - path: /
                   pathType: ImplementationSpecific

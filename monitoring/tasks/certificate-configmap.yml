@@ -1,0 +1,36 @@
+- name: Create a k8s Configmap for Root CA certs
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      kind: ConfigMap 
+      apiVersion: v1 
+      metadata:
+        name: ca-bundle
+        namespace: '{{ monitoring_namespace }}'
+      data:
+        domain-ca.pem: |
+          -----BEGIN CERTIFICATE-----
+          MIIDjjCCAnagAwIBAgIQO1W9Nj4ZKK5DMLN0ZhmUCzANBgkqhkiG9w0BAQsFADBG
+          MRUwEwYKCZImiZPyLGQBGRYFbG9jYWwxEzARBgoJkiaJk/IsZAEZFgNkZXYxGDAW
+          BgNVBAMTD2Rldi1ERVYtREMwMS1DQTAeFw0yMzA0MTMyMTU1MjdaFw0zMzA0MTMy
+          MjA1MzRaMEYxFTATBgoJkiaJk/IsZAEZFgVsb2NhbDETMBEGCgmSJomT8ixkARkW
+          A2RldjEYMBYGA1UEAxMPZGV2LURFVi1EQzAxLUNBMIIBIjANBgkqhkiG9w0BAQEF
+          AAOCAQ8AMIIBCgKCAQEAyJhIHiKKzbFz394+LrROoAujRgQl30u4HwOSBdcUMicL
+          75TXTLOAFmtOvp6Tu/2BducnrRNBPvxGTC6+4zN2HTP7neqIpNElmkp97fVM2kQL
+          z8dG5SFdXdROMOcpCagaQ6cHUxZWKJgrHUeiCGceD6CGpYsYFjwzjt9f6JNTkSbH
+          GpYLwP/MYG+y5ij36OYMZI7f17fSsFpcnEc1Hpy7eslRYUqMSaPnaJMkCvyNB3bf
+          DIZ3Ww8MF/95es41ZEZZSfvu+i2ENwIdHKfxzXZDc7hRY8o+ch8wgQg8rR8+cDwx
+          Mo0A1HKoqnaqyCttHXwe1pTQjjansAEONfULEBdyIQIDAQABo3gwdjALBgNVHQ8E
+          BAMCAYYwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQU7A4/q6SDPj88GvOlmfdS
+          ZuzSTtgwEgYJKwYBBAGCNxUBBAUCAwIAAjAjBgkrBgEEAYI3FQIEFgQUOF+CqD/u
+          G+38+X0iUYLkC5W1X2AwDQYJKoZIhvcNAQELBQADggEBAFHfNPoJEEbA6/4ZLMcq
+          GLI1vbt9L1MEYHA2N4zxi3qjsPhn6YsHobTEpwvQ1xg4X51Av8Q2DGERhAPstDH2
+          754bEFTR6W+VPpKcnWvMtggO5LcTJywwsW1oneeVEywxSfFvVjTph7ZuYF8p5H7R
+          V5WBsp4a/Sli3PcxSQuxrcon4TA3e6VbdXwzeVnHnx5Z+o5s+sxooxrZIULlaTGG
+          gFXSaYQMzt9Vds49Wntwc8DszyqxNOfNfS2Ao8dePsxOib8KqRG6xbJzopNsVSwB
+          uD9VfLo0inmKGUaQhD2ueXwM9XDnU+glGjGp0IjBNYEa+M1VnkyP8cHzIEOHlFGn
+          fz4=
+          -----END CERTIFICATE-----
+          
+
+      

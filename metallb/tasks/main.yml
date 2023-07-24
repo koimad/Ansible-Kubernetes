@@ -24,6 +24,10 @@
           repository: '{{ metallb_container_repo }}/metallb/speaker' 
           tag: v0.13.9   
 
+- name: Prompt To Confim Reboot Of all nodes
+  pause:
+    prompt: Please confirm you have rebboted all the nodes before continueing
+
 - name: Create Metallb IP Address Range and Advertise
   template: 
     src: metallb-ipaddresses.j2 

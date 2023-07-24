@@ -1,0 +1,31 @@
+---
+- name: Copy Certificate Files 
+  ansible.builtin.copy:
+    src: '{{ item }}'
+    dest: '~/'
+  with_fileglob:
+    - 'host-certs/*.pfx'
+  #loop: "{{ lookup('fileglob', 'host-certs/*.pfx', wantlist=true) }}" 
+
+- name: Find each secret
+  find:
+    paths: '~/'
+    patterns: '*.pfx'
+    recurse: no
+    file_type: file
+  register: certificate_files  
+
+- name: Generate each secret
+  include_tasks: "ingress-create-secret.yml"  
+  with_items: '{{ certificate_files.files }}'
+  loop_control:
+    loop_var: item
+
+
+#STEP 1: Exporting certificate file (public.crt):
+#OpenSSL> pkcs12 -in input.pfx -clcerts -nokeys -out public.crt
+
+#You should enter the password of the pfx file in order to export the public certificate (public.crt).
+
+#STEP 2: Exporting encrypted certificate key (private.key):
+#OpenSSL> pkcs12 -in input.pfx -nocerts -out private.key  

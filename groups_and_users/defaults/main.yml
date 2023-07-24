@@ -1,1 +1,30 @@
 ---
+group_and_users_groups:
+  - name: postgress
+    id: 26
+  - name: minio
+    id: 1001
+  - name: grafana
+    id: 472     
+  # - name: gluster
+  #   id: 996    
+
+group_and_users_users:
+  - name: postgress    
+    id: 26
+    comment: "User for postgress container"
+    group: postgress
+  - name: minio
+    id: 1001
+    comment: "User for minio container"
+    group: minio
+  # - name: polkitd
+  #   id: 998
+  #   comment: "User for polkitd should aleary exist"
+  #   group: polkitd
+  - name: grafana
+    id: 472   
+    comment: "User for grafana container"
+    group: grafana
+
+     

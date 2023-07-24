@@ -1,6 +1,6 @@
 - name: Create a monitoring namespace
   kubernetes.core.k8s:
-    name: monitoring
+    name: '{{ monitoring_namespace }}'
     api_version: v1
     kind: Namespace
     state: present
@@ -12,6 +12,8 @@
     repo_url: '{{ monitoring_helm_repository }}'
     state: present
 
+- include_tasks: certificate-configmap.yml
+- include_tasks: ingress-certificates.yml
 - include_tasks: prometheus-basic.yml
 - include_tasks: grafana-dashboards.yml
 - include_tasks: grafana.yml

@@ -1,0 +1,49 @@
+---
+
+- name: Directory for Minio
+  ansible.builtin.file:
+    path: "{{ ( network_shares_root_path ,'minio') | path_join }}"
+    state: directory
+    recurse: yes
+    owner: minio
+    group: minio
+
+- name: Directory for Mongo
+  ansible.builtin.file:
+    path: "{{ ( network_shares_root_path ,'mongo') | path_join }}"
+    state: directory
+    recurse: yes
+    owner: 998
+    group: 996
+
+- name: Directory for Nucs
+  ansible.builtin.file:
+    path: "{{ ( network_shares_root_path ,'Nucs') | path_join }}"
+    state: directory
+    recurse: yes
+    owner: minio
+    group: 996    
+
+- name: Directory for postgress
+  ansible.builtin.file:
+    path: "{{ ( network_shares_root_path ,'postgress') | path_join }}"
+    state: directory
+    recurse: yes
+    owner: postgress
+    group: postgress      
+
+- name: Directory for postgress
+  ansible.builtin.file:
+    path: "{{ ( network_shares_root_path ,'postgress-ui') | path_join }}"
+    state: directory
+    recurse: yes
+    owner: postgress
+    group: postgress      
+
+- name: Directory for stat
+  ansible.builtin.file:
+    path: "{{ ( network_shares_root_path ,'stat') | path_join }}"          
+    state: directory
+    recurse: yes
+    owner: postgress
+    group: postgress        

@@ -147,5 +147,16 @@ ask for privilege escalation password
 ```
 helm upgrade --install nginx-ingress helm-local/nginx-ingress --values ingress-values.yaml -n nginx-ingress --create-namespace
 
+STEP 1: Exporting certificate file (public.crt):
+OpenSSL> pkcs12 -in input.pfx -clcerts -nokeys -out public.crt
+
+You should enter the password of the pfx file in order to export the public certificate (public.crt).
+
+STEP 2: Exporting encrypted certificate key (private.key):
+OpenSSL> pkcs12 -in input.pfx -nocerts -out private.key
+
+
 ```
+
+
 

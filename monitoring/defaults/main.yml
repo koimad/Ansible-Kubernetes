@@ -3,8 +3,9 @@ monitoring_helm_repository: ''
 monitoring_container_repo: ''
 
 monitoring_prometheus_host: 'prometheus.dev.local'
-monitoring_prometheus_url:  'http://{{ monitoring_prometheus_host }}'
+monitoring_prometheus_url:  'https://{{ monitoring_prometheus_host }}'
 
 monitoring_grafana_host:  'grafana.dev.local'
-monitoring_grafana_url:  'http://{{ monitoring_grafana_host }}'
+monitoring_grafana_url:  'https://{{ monitoring_grafana_host }}'
 
+monitoring_namespace: 'monitoring'
