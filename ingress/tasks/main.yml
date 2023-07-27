@@ -23,7 +23,12 @@
           annotations:
             prometheus.io/scrape: "true"
             prometheus.io/path: /metrics
-            prometheus.io/port: "9113"  
+            prometheus.io/port: "9113" 
+            
+        config:
+          entries: {            
+              client-max-body-size: '500m'
+          }
       prometheus:       
         create: true        
         port: 9113
