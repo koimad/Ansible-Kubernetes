@@ -42,7 +42,8 @@
   #- role: calico-firewall
   - role: metallb
   - role: ingress
-  - role: nfs-subdir  
+  - role: nfs-subdir
+  - role: kubernetes-reflector 
   tags: Applications
 
 - name: Monitoring Applications

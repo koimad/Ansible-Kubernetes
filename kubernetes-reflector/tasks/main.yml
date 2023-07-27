@@ -1,0 +1,19 @@
+---
+- name: Add nginx-ingress chart repo
+  kubernetes.core.helm_repository:
+    name: helm-local
+    binary_path: /usr/local/bin/helm
+    repo_url: '{{ local_helm_repository }}'
+    state: present
+
+- name: Deploy kubernetes reflector helm chart (secret and configmap management tool)
+  kubernetes.core.helm:
+    name: kubernetes-reflector
+    binary_path: /usr/local/bin/helm
+    chart_ref: helm-local/reflector
+    create_namespace: true
+    release_namespace: emberstack 
+    wait: true
+    values: 
+      image:
+        repository: '{{ local_container_repo }}/emberstack/kubernetes-reflector'
