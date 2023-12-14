@@ -1,5 +1,5 @@
 ---
-configure_crio_crio_version: "1.27"
+configure_crio_crio_version: "1.28"
 configure_crio_crio_os: "CentOS_8_Stream"
 
 configure_crio_pod_network_cidr:
