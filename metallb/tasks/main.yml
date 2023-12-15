@@ -18,11 +18,11 @@
       controller:
         image:
           repository: '{{ metallb_container_repo }}/metallb/controller'
-          tag: v0.13.9
+          tag: v0.13.12
       speaker:
         image:
           repository: '{{ metallb_container_repo }}/metallb/speaker' 
-          tag: v0.13.9   
+          tag: v0.13.12  
 
 - name: Prompt To Confim Reboot Of all nodes
   pause:

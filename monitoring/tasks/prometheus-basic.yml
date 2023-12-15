@@ -1,13 +1,14 @@
 ---
 # Values for Prometheus basic helm chart loacated at the following URL
 # https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus
-- name: Deploy the basic Prometheus and included compoonents required by the basic installation
+- name: Deploy the basic Prometheus and included components required by the basic installation
   kubernetes.core.helm:
     name: prometheus
     binary_path: /usr/local/bin/helm
     chart_ref: helm-local/prometheus
     create_namespace: true
     release_namespace: '{{ monitoring_namespace }}'
+    update_repo_cache: true
     wait: true
     values: 
       configmapReload:
@@ -15,7 +16,7 @@
           enabled: true
           image:  
             repository: '{{ monitoring_container_repo }}/prometheus-operator/prometheus-config-reloader'
-            tag: v0.65.1          
+            tag: v0.70.0         
             pullPolicy: IfNotPresent
 
           extraConfigmapMounts:
@@ -30,7 +31,7 @@
         image:
           repository: '{{ monitoring_container_repo }}/bitnami/prometheus'
           # if not set appVersion field from Chart.yaml is used
-          tag: '2.43.1'    
+          tag: '2.48.1'    
           pullPolicy: IfNotPresent    
         configPath: /etc/config/prometheus.yml
         ### The data directory used by prometheus to set --storage.tsdb.path
@@ -79,7 +80,7 @@
         enabled: false
         image: 
           repository: '{{ monitoring_container_repo }}/bitnami/alertmanager'
-          tag: '0.25.0'
+          tag: '0.26.0'
 
         persistence:
           enabled: true
@@ -117,28 +118,32 @@
           prometheus.io/port: '8080'
           prometheus.io/path: '/metrics'
           prometheus.io/scheme: 'http'
-        image: 
-          repository: '{{ monitoring_container_repo }}/bitnami/kube-state-metrics'
-          tag: "2.8.2"          
+        image:
+          registry: '{{ monitoring_container_repo }}'
+          repository: 'bitnami/kube-state-metrics'
+          tag: "2.10.1"          
         kubeRBACProxy:
           enabled: false
-          image:            
-            repository: '{{ monitoring_container_repo }}/bitnami/kube-rbac-proxy'
-            tag: 0.14.1
+          image:         
+            registry: '{{ monitoring_container_repo }}'
+            repository: 'bitnami/kube-rbac-proxy'
+            tag: v0.15.0
       
       prometheus-node-exporter:
         enabled: true
         image:          
-          repository: '{{ monitoring_container_repo }}/bitnami/node-exporter'
-          tag: "1.5.0"
+          registry: '{{ monitoring_container_repo }}'
+          repository: 'bitnami/node-exporter'
+          tag: "1.7.0"
         kubeRBACProxy:
           enabled: false
-          image:            
-            repository: '{{ monitoring_container_repo }}/bitnami/kube-rbac-proxy'
-            tag: 0.14.0
+          image:                      
+            registry: '{{ monitoring_container_repo }}'
+            repository: 'bitnami/kube-rbac-proxy'
+            tag: v0.15.0
 
       prometheus-pushgateway:
         enabled: false
         image:
           repository: '{{ monitoring_container_repo }}/bitnami/pushgateway'
-          tag: "1.5.1"
+          tag: "1.6.2"

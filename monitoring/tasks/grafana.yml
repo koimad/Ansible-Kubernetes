@@ -8,22 +8,44 @@
     chart_ref: helm-local/grafana
     create_namespace: true
     release_namespace: '{{ monitoring_namespace }}'
+    update_repo_cache: true
     wait: true
     values:
       adminUser: 'admin'
       adminPassword: 'Pass@word10'
       
       image:
-        repository: '{{ monitoring_container_repo }}/grafana/grafana'
-        tag: '9.5.1'
+        registry: '{{ monitoring_container_repo }}'
+        repository: 'grafana/grafana'
+        tag: '10.2.2'
 
-      securityContext:
+      testFramework:
+        enabled: false
+        image:
+          registry: '{{ monitoring_container_repo }}'
+          repository: bats/bats
+          tag: "v1.4.1"
+        imagePullPolicy: IfNotPresent
+        securityContext: {}
+
+      # dns configuration for pod
+      dnsPolicy: ~
+      dnsConfig: {}
+        # nameservers:
+        #   - 8.8.8.8
+        #   options:
+        #   - name: ndots
+        #     value: "2"
+        #   - name: edns0
+
+      securityContext:      
         runAsNonRoot: false
         runAsUser: 0
         runAsGroup: 0
         fsGroup: 0
 
       containerSecurityContext:
+        allowPrivilegeEscalation: false
         capabilities:
           drop:
           - ALL
@@ -40,7 +62,8 @@
           readOnly: true
                   
       downloadDashboardsImage:
-        repository: '{{ monitoring_container_repo }}/curlimages/curl'
+        registry: '{{ monitoring_container_repo }}'
+        repository: 'curlimages/curl'
         tag: 7.85.0
   
       downloadDashboards:
@@ -91,8 +114,9 @@
       initChownData:
         enabled: false
         image:
-          repository: '{{ monitoring_container_repo }}/busybox'
-          tag: "1.36.0"
+          registry: '{{ monitoring_container_repo }}'
+          repository: 'busybox'
+          tag: "1.31.1"
           sha: ""
           pullPolicy: IfNotPresent    
         resources: {}
@@ -115,8 +139,9 @@
         dashboards:
           enabled: true
         image:
-          repository: '{{ monitoring_container_repo }}/kiwigrid/k8s-sidecar'
-          tag: 1.23.3            
+          registry: '{{ monitoring_container_repo }}'
+          repository: 'kiwigrid/k8s-sidecar'
+          tag: 1.25.2            
         imagePullPolicy: IfNotPresent
         resources: {}
         # limits:
@@ -149,7 +174,8 @@
 
       imageRenderer:
         enabled: false
-        image:            
-          repository: '{{ monitoring_container_repo }}/grafana/grafana-image-renderer'            
-          tag: "3.7.0"                        
+        image:   
+          registry: '{{ monitoring_container_repo }}'         
+          repository: 'grafana/grafana-image-renderer'            
+          tag: "latest"                        
           pullPolicy: IfNotPresent  

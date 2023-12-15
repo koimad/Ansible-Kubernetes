@@ -8,7 +8,7 @@
 
 - name: Install Helm via the tar file mechanism
   ansible.builtin.unarchive:    
-    src: helm-v3.11.3-linux-amd64.tar
+    src: helm-v3.13.3-linux-amd64.tar.gz
     dest: ~/helm
 
 - name: Copy Helm tar

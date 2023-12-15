@@ -18,7 +18,7 @@
       controller:        
         image:
           repository: '{{ local_container_repo }}/nginx/nginx-ingress'
-          tag: "3.1.0"
+          tag: "3.3.2"
         pod:
           annotations:
             prometheus.io/scrape: "true"
