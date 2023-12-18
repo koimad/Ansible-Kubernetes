@@ -39,7 +39,7 @@
   hosts: masters
   become: true
   roles:
-  #- role: calico-firewall
+  - role: calico-firewall
   - role: metallb
   - role: ingress
   - role: nfs-subdir

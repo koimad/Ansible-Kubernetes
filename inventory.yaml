@@ -119,10 +119,10 @@ all:
     nfs_subdir_helm_repository: '{{ local_helm_repository }}'
 
     monitoring_prometheus_host: 'prometheus.dev.local'
-    monitoring_prometheus_url:  'http://{{ monitoring_prometheus_host }}'
+    monitoring_prometheus_url:  'https://{{ monitoring_prometheus_host }}'
     
     monitoring_grafana_host:  'grafana.dev.local'
-    monitoring_grafana_url:  'http://{{ monitoring_grafana_host }}'
+    monitoring_grafana_url:  'https://{{ monitoring_grafana_host }}'
 
     monitoring_certificate_pfx_password: 'e8154314'
     monitoring_encrypted_key_password: 'micky-mouse'
