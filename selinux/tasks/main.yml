@@ -1,9 +1,7 @@
 ---
 # tasks file for putting SELINUX into permissive mode
-- name: Set Runtime setting of SELINUX to permissive
-  command: setenforce 0
-  ignore_errors: false
-
-- name: Set SELINUX config file to permissive
-  command: sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
-  ignore_errors: false
+- name: Put SELinux in the required mode, logging actions that would be blocked if permissive
+  ansible.posix.selinux:
+    policy: targeted
+    #state: permissive  
+    state: enforcing

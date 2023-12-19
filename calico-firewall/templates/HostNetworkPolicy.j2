@@ -72,7 +72,7 @@ spec:
     - action: Allow
       protocol: TCP
       destination:
-        ports: [8444]
+        ports: [8444,8443]
   selector: has(worker-endpoint) || has(control-endpoint) 
 
 ---
