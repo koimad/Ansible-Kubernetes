@@ -24,6 +24,14 @@
           repository: '{{ metallb_container_repo }}/metallb/speaker' 
           tag: v0.13.12  
 
+        frr:
+          enabled: true
+          image:
+            repository: '{{ metallb_container_repo }}/frrouting/frr'
+            tag: 8.5.2
+          metricsPort: 7473
+          resources: {}  
+
 - name: Prompt To Confim Reboot Of all nodes
   pause:
     prompt: Please confirm you have rebboted all the nodes before continueing

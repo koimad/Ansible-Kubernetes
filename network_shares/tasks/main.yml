@@ -22,7 +22,8 @@
     state: directory
     recurse: yes
     owner: minio
-    group: 996    
+    group: 996
+    mode: 0774    
 
 - name: Directory for postgress
   ansible.builtin.file:
@@ -31,14 +32,16 @@
     recurse: yes
     owner: postgress
     group: postgress      
+    mode: 0774
 
-- name: Directory for postgress
+- name: Directory for postgress-ui
   ansible.builtin.file:
     path: "{{ ( network_shares_root_path ,'postgress-ui') | path_join }}"
     state: directory
     recurse: yes
     owner: postgress
     group: postgress      
+    mode: 0774
 
 - name: Directory for stat
   ansible.builtin.file:
@@ -46,4 +49,23 @@
     state: directory
     recurse: yes
     owner: postgress
-    group: postgress        
+    group: postgress    
+    mode: 0774 
+
+- name: Directory for grafana
+  ansible.builtin.file:
+    path: "{{ ( network_shares_root_path ,'grafana') | path_join }}"          
+    state: directory
+    recurse: yes
+    owner: grafana
+    group: grafana           
+    mode: 0774
+
+- name: Directory for prometheus
+  ansible.builtin.file:
+    path: "{{ ( network_shares_root_path ,'prometheus') | path_join }}"          
+    state: directory
+    recurse: yes
+    owner: grafana
+    group: grafana 
+    mode: 0774

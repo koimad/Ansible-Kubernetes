@@ -1,20 +1,44 @@
 ---
-
-- name: Install some packages needed to configure the nodes
-  ansible.builtin.package:
-    name: "{{ item }}"
-  with_items:
-    - "{{ pre_setup_basic_packages }}"    
-
 - name: Copy Root Certificates into the anchors folder  
   copy:
     src: "rootca/"
     dest: "/etc/pki/ca-trust/source/anchors/"
   register: result
-  
+
 - name: Update CA Trusts
   command: update-ca-trust
   when: result is changed
+
+- name: Add Redhat x86_64 BaseOS Proxied YUM repository
+  yum_repository:
+    file: NexusRedhatRepository
+    name: 'NexusRedhatRepositoryBaseOS'
+    description: 'Redhat Repository Baseos proxied through Nexus Repository'
+    baseurl: '{{ pre_setup_redhat_repository }}/$releasever/$basearch/baseos/os'
+    gpgkey: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release'
+    gpgcheck: true
+    repo_gpgcheck: false
+    enabled: true
+    ui_repoid_vars: 'releasever basearch'
+
+
+- name: Add Redhat x86_64 AppStream Proxied YUM repository
+  yum_repository:
+    file: NexusRedhatRepository
+    name: 'NexusRedhatRepositoryAppStream'
+    description: 'Redhat Repository AppStream proxied through Nexus Repository'
+    baseurl: '{{ pre_setup_redhat_repository }}/$releasever/$basearch/appstream/os'
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+    gpgcheck: true
+    repo_gpgcheck: false
+    enabled: true
+    ui_repoid_vars: releasever basearch
+
+- name: Install some packages needed to configure the nodes
+  ansible.builtin.package:
+    name: "{{ item }}"
+  with_items:
+    - "{{ pre_setup_basic_packages }}"   
 
 - name: Add Pip config so we point to our repository
   ansible.builtin.template:

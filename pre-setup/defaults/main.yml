@@ -2,6 +2,7 @@
 # Basic backages required for installation
 pre_setup_basic_packages:
   - iproute-tc
+  - socat # dependency of cri-o
 
 pre_setup_trusted_host: ''
 pre_setup_python_repository: ''

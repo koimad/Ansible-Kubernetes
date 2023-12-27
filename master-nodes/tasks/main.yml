@@ -13,7 +13,7 @@
         dest: ~/kube-init.yaml
 
     - name: Initialize K8S cluster
-      shell: kubeadm init --config ~/kube-init.yaml  # deploy using custom config and local repos
+      shell: kubeadm init --config ~/kube-init.yaml # deploy using custom config and local repos
                
     - name: Create .kube directory
       file:

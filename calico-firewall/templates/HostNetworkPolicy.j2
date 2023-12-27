@@ -25,7 +25,7 @@ spec:
       protocol: TCP
       destination:
         nets: [{{ calico_pod_cidr }},{{ configure_crio_pod_network_cidr }},{{ hosts_cidr }}]
-        ports: [80,443,6443,9443,2379:2380,10250,10251,10252,179,5473,30000:32767]
+        ports: [80,443,2049,6443,9443,2379:2380,10250,10251,10252,179,5473,30000:32767]
   selector: has(worker-endpoint) || has(control-endpoint)
 
 ---

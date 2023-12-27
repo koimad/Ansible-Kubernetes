@@ -17,14 +17,16 @@ group_and_users_users:
   - name: minio
     id: 1001
     comment: "User for minio container"
-    group: minio
-  # - name: polkitd
-  #   id: 998
-  #   comment: "User for polkitd should aleary exist"
-  #   group: polkitd
+    group: minio 
   - name: grafana
     id: 472   
     comment: "User for grafana container"
     group: grafana
+  
+  # - name: polkitd
+  #   id: 998
+  #   comment: "User for polkitd should aleary exist"
+  #   group: polkitd
+
 
      

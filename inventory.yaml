@@ -2,24 +2,27 @@ all:
   children:
     masters:
       hosts:
-        redhat-8-c1-cp1.dev.local:        
+        redhat-8-c1-cp1.dev.local:                
       vars:
         ipvsMode: false;        
 
         workerEnpoints: 
           - worker1:
             name: redhat-8-c1-node1.dev.local
+            hostname:  redhat-8-c1-node1
             ipAddress: 192.168.0.212
             interfaceName: eth0
           
           - worker2:
             name: redhat-8-c1-node2.dev.local
+            hostname:  redhat-8-c1-node2
             ipAddress: 192.168.0.213              
             interfaceName: eth0
         
         controlEndpoints:
           - control1:
             name: redhat-8-c1-cp1.dev.local
+            hostname:  redhat-8-c1-cp1
             ipAddress: 192.168.0.211
             interfaceName: eth0
 
@@ -104,8 +107,10 @@ all:
     local_repository_base_url: https://{{ local_repository_host }}:8443
 
     # Kebernetes repo url for downloading kubernetes required yum packages
-    install_k8s_kubernetes_yum_repo:  '{{ local_repository_base_url }}/repository/google/kubernetes-el7-x86_64'
-    
+    install_k8s_kubernetes_yum_repos: 
+      - '{{ local_repository_base_url }}/repository/Kubernetes/v1.28/rpm'
+      - '{{ local_repository_base_url }}/repository/Kubernetes/v1.29/rpm'
+
     # Opensuse repo url for downloading kubernetes required yum packages
     configure_crio_open_suse_yum_repo: '{{ local_repository_base_url }}/repository/opensuse/{{ crio_os }}'
 
@@ -131,5 +136,9 @@ all:
     nfs_subdir_nfs_path: '/data'
 
     pre_setup_trusted_host: '{{ local_repository_host }}'
-    pre_setup_python_repository: '{{ local_repository_base_url}}/repository/python-group'    
-      
+    pre_setup_python_repository: '{{ local_repository_base_url}}/repository/python-group'       
+    pre_setup_redhat_repository: '{{ local_repository_base_url}}/repository/rhel-proxy'        
+    
+    kubernetesVersion: 1.28.5
+    install_k8s_kubernetesVersion: '{{ kubernetesVersion }}'
+    master_kubernetesVersion: '{{ kubernetesVersion }}'

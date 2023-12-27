@@ -3,14 +3,14 @@
 apiVersion: projectcalico.org/v3
 kind: HostEndpoint
 metadata:
-  name: host-{{ hostEndPoint.name }}
+  name: host-{{ hostEndPoint.hostname }}
   labels:
     role: k8s-worker
     worker-endpoint: true
     control-endpoint: false
 spec:
   interfaceName: {{ hostEndPoint.interfaceName }}
-  node: {{ hostEndPoint.name }}
+  node: {{ hostEndPoint.hostname }}
   expectedIPs: ["{{hostEndPoint.ipAddress}}"]
 {% endfor %} 
 {% for controlEndPoint in controlEndpoints -%}
@@ -18,13 +18,13 @@ spec:
 apiVersion: projectcalico.org/v3
 kind: HostEndpoint
 metadata:
-  name: host-{{controlEndPoint.name}}
+  name: host-{{controlEndPoint.hostname}}
   labels:
     role: k8s-controller
     worker-endpoint: false
     control-endpoint: true
 spec:
   interfaceName: {{controlEndPoint.interfaceName}}
-  node: {{controlEndPoint.name}}
+  node: {{controlEndPoint.hostname}}
   expectedIPs: ["{{controlEndPoint.ipAddress}}"]
 {% endfor %}

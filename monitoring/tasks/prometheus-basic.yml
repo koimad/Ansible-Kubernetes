@@ -71,9 +71,9 @@
           size: 5Gi  
           storageClass: 'nfs-client'
         securityContext:
-          runAsUser: 0
-          runAsNonRoot: false
-          runAsGroup: 0
+          runAsUser: 472
+          runAsNonRoot: true
+          runAsGroup: 472
           fsGroup: 0
       
       alertmanager:

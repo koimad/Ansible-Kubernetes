@@ -84,8 +84,8 @@ Install json queries support need to use pip version to match python version fro
     pip3.8 install jmespath --user
 ``` 
 
-## Generate GPG Certificate for using Nexus as a YUM Proxy for Google's Yum Repository for Kubernetes
-If you need to use Nexus as a Proxy repository for the Google Kubernetes Yum Packages then the Repository needs to be setup with a PGP key as below.
+## Generate GPG Certificate for using Nexus as a YUM Proxy for Kubernetes's Yum Repository for Kubernetes
+If you need to use Nexus as a Proxy repository for the Kubernetes Yum Packages then the Repository needs to be setup with a PGP key as below.
 
 1. Generate a GPG key
 <pre><code>

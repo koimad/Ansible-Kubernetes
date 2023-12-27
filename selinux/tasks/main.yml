@@ -3,5 +3,5 @@
 - name: Put SELinux in the required mode, logging actions that would be blocked if permissive
   ansible.posix.selinux:
     policy: targeted
-    #state: permissive  
-    state: enforcing
+    state: permissive  
+    #state: enforcing

@@ -22,8 +22,8 @@
   roles:
   #  - role: configure-firewall
   #    configure_firewall_firewall_ports: "{{ master_firewall_ports }}"
-  - role: master-nodes
-  - role: helm-install
+   - role: master-nodes
+   - role: helm-install
   tags: MasterNodes
 
 - name: Install Kubernetes Worker Nodes
@@ -32,39 +32,39 @@
   roles:
   #  - role: configure-firewall
   #    configure_firewall_firewall_ports: "{{ worker_firewall_ports }}"
-  - role: worker-nodes
+   - role: worker-nodes
   tags: WorkerNodes
 
 - name: Configure Calico Firewalls, Storage & Ingress and Load Balancing
   hosts: masters
   become: true
   roles:
-  - role: calico-firewall
-  - role: metallb
-  - role: ingress
-  - role: nfs-subdir
-  - role: kubernetes-reflector 
+   - role: calico-firewall
+   - role: metallb
+   - role: ingress
+   - role: nfs-subdir
+   - role: kubernetes-reflector 
   tags: Applications
+
+- name: Pre Applications Items All Hosts
+  hosts: all
+  become: true
+  roles:
+   - role: groups_and_users
+  tags: PreApplications
+
+- name: Pre Applications Items Master Node
+  hosts: masters
+  become: true
+  roles:
+   - role: network_shares
+  tags: PreApplications
 
 - name: Monitoring Applications
   hosts: masters
   become: true
   roles:  
-  - role: monitoring
+   - role: monitoring
   tags: Monitoring
 
-# - name: Pre ECA Items All Hosts
-#   hosts: all
-#   become: true
-#   roles:
-#     - role: groups_and_users
-#   tags: Pre_ECA
 
-- name: Pre ECA Items Master Node
-  hosts: masters
-  become: true
-  roles:
-    - role: groups_and_users
-    - role: network_shares
-
-  tags: Pre_ECA  

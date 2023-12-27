@@ -1,4 +1,6 @@
 ---
+
+
 # Values for Grafana helm chart loacated at the following URL
 # https://github.com/grafana/helm-charts/tree/main/charts/grafana
 - name: Deploy Grafana and included compoonents
@@ -39,9 +41,9 @@
         #   - name: edns0
 
       securityContext:      
-        runAsNonRoot: false
-        runAsUser: 0
-        runAsGroup: 0
+        runAsNonRoot: true
+        runAsUser: 472
+        runAsGroup: 472
         fsGroup: 0
 
       containerSecurityContext:
