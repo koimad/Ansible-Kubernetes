@@ -85,24 +85,24 @@ all:
     #crio version & OS
     crio_os: 'CentOS_8_Stream'
     configure_crio_crio_os: '{{  crio_os }}'
-    configure_crio_crio_version: "1.27"
+    configure_crio_crio_version: "1.28.2"
 
     # Kubernetes pod CIDR and service CIDR, should not cause clash with host networks CIDR
-    pod_network_cidr: 192.160.0.0/16
+    pod_network_cidr: 192.168.100.0/24
     configure_crio_pod_network_cidr: '{{ pod_network_cidr }}'
     master_nodes_pod_network_cidr: '{{ pod_network_cidr }}'
     service_subnet_cidr: 10.96.0.0/12
 
 
     # Calico Pod Network CIDR should be a subnet of pod_network_cidr
-    calico_pod_cidr: 192.160.0.0/18 
+    calico_pod_cidr: 192.168.100.0/26
     master_nodes_calico_pod_cidr: '{{ calico_pod_cidr }}'
 
     hosts_cidr: 192.168.0.0/24
 
     masterNode: redhat-8-c1-cp1.dev.local
 
-    metallb_ip_address_range: 192.168.0.230-192.168.0.240
+    metallb_ip_address_range: 192.168.0.230-192.168.0.231
     
     local_repository_base_url: https://{{ local_repository_host }}:8443
 
@@ -139,6 +139,6 @@ all:
     pre_setup_python_repository: '{{ local_repository_base_url}}/repository/python-group'       
     pre_setup_redhat_repository: '{{ local_repository_base_url}}/repository/rhel-proxy'        
     
-    kubernetesVersion: 1.28.5
+    kubernetesVersion: 1.29.3
     install_k8s_kubernetesVersion: '{{ kubernetesVersion }}'
     master_kubernetesVersion: '{{ kubernetesVersion }}'

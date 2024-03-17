@@ -10,7 +10,7 @@ spec:
   ingress:
     - action: Allow
       source:
-        nets: [{{ calico_pod_cidr }},{{ configure_crio_pod_network_cidr }},{{ hosts_cidr }}]
+        nets: [{{ calico_pod_cidr }},{{ configure_crio_pod_network_cidr }}]
   selector: has(worker-endpoint) || has(control-endpoint)
 
 ---
@@ -24,8 +24,25 @@ spec:
     - action: Allow
       protocol: TCP
       destination:
-        nets: [{{ calico_pod_cidr }},{{ configure_crio_pod_network_cidr }},{{ hosts_cidr }}]
+        nets: [{{ calico_pod_cidr }},{{ configure_crio_pod_network_cidr }}]
         ports: [80,443,2049,6443,9443,2379:2380,10250,10251,10252,179,5473,30000:32767]
+  selector: has(worker-endpoint) || has(control-endpoint)
+
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: allow-web-https-ingress
+spec:
+  order: 10
+  preDNAT: true
+  applyOnForward: true
+  ingress:
+    - action: Allow
+      source:
+        nets: [{{ hosts_cidr }}]
+      destination:
+        ports: [443]        
   selector: has(worker-endpoint) || has(control-endpoint)
 
 ---
@@ -72,7 +89,7 @@ spec:
     - action: Allow
       protocol: TCP
       destination:
-        ports: [8444,8443]
+        ports: [8443,8443,8445,8446]
   selector: has(worker-endpoint) || has(control-endpoint) 
 
 ---
