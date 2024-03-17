@@ -39,6 +39,7 @@ spec:
   applyOnForward: true
   ingress:
     - action: Allow
+      protocol: TCP
       source:
         nets: [{{ hosts_cidr }}]
       destination:
@@ -89,7 +90,7 @@ spec:
     - action: Allow
       protocol: TCP
       destination:
-        ports: [8443,8443,8445,8446]
+        ports: [8443,8444,8445,8446]
   selector: has(worker-endpoint) || has(control-endpoint) 
 
 ---

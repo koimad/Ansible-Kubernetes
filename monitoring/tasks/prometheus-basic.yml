@@ -16,7 +16,6 @@
           enabled: true
           image:  
             repository: '{{ monitoring_container_repo }}/prometheus-operator/prometheus-config-reloader'
-            tag: v0.70.0         
             pullPolicy: IfNotPresent
 
           extraConfigmapMounts:
@@ -31,8 +30,8 @@
         image:
           repository: '{{ monitoring_container_repo }}/bitnami/prometheus'
           # if not set appVersion field from Chart.yaml is used
-          tag: '2.48.1'    
-          pullPolicy: IfNotPresent    
+          tag: '2.50.1' 
+          pullPolicy: IfNotPresent            
         configPath: /etc/config/prometheus.yml
         ### The data directory used by prometheus to set --storage.tsdb.path
         ### When empty server.persistentVolume.mountPath is used instead
@@ -80,7 +79,6 @@
         enabled: false
         image: 
           repository: '{{ monitoring_container_repo }}/bitnami/alertmanager'
-          tag: '0.26.0'
 
         persistence:
           enabled: true
@@ -127,7 +125,7 @@
           image:         
             registry: '{{ monitoring_container_repo }}'
             repository: 'bitnami/kube-rbac-proxy'
-            tag: v0.15.0
+            tag: 0.14.0
       
       prometheus-node-exporter:
         enabled: true
@@ -140,10 +138,9 @@
           image:                      
             registry: '{{ monitoring_container_repo }}'
             repository: 'bitnami/kube-rbac-proxy'
-            tag: v0.15.0
 
       prometheus-pushgateway:
         enabled: false
         image:
           repository: '{{ monitoring_container_repo }}/bitnami/pushgateway'
-          tag: "1.6.2"
+          tag: "1.7.0"

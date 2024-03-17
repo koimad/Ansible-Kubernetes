@@ -18,17 +18,17 @@
       controller:
         image:
           repository: '{{ metallb_container_repo }}/metallb/controller'
-          tag: v0.13.12
+          #tag: latest
       speaker:
         image:
           repository: '{{ metallb_container_repo }}/metallb/speaker' 
-          tag: v0.13.12  
+          #tag: latest          
 
         frr:
           enabled: true
           image:
             repository: '{{ metallb_container_repo }}/frrouting/frr'
-            tag: 8.5.2
+            #tag: latest            
           metricsPort: 7473
           resources: {}  
 

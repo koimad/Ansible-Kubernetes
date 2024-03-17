@@ -19,15 +19,12 @@
       image:
         registry: '{{ monitoring_container_repo }}'
         repository: 'grafana/grafana'
-        tag: '10.2.2'
+        #tag: 'latest'
 
       testFramework:
         enabled: false
         image:
           registry: '{{ monitoring_container_repo }}'
-          repository: bats/bats
-          tag: "v1.4.1"
-        imagePullPolicy: IfNotPresent
         securityContext: {}
 
       # dns configuration for pod
@@ -44,7 +41,7 @@
         runAsNonRoot: true
         runAsUser: 472
         runAsGroup: 472
-        fsGroup: 0
+        fsGroup: 472
 
       containerSecurityContext:
         allowPrivilegeEscalation: false
@@ -65,8 +62,6 @@
                   
       downloadDashboardsImage:
         registry: '{{ monitoring_container_repo }}'
-        repository: 'curlimages/curl'
-        tag: 7.85.0
   
       downloadDashboards:
         env: {}
@@ -117,10 +112,6 @@
         enabled: false
         image:
           registry: '{{ monitoring_container_repo }}'
-          repository: 'busybox'
-          tag: "1.31.1"
-          sha: ""
-          pullPolicy: IfNotPresent    
         resources: {}
           # limits:
           #   cpu: 100m
@@ -141,9 +132,7 @@
         dashboards:
           enabled: true
         image:
-          registry: '{{ monitoring_container_repo }}'
-          repository: 'kiwigrid/k8s-sidecar'
-          tag: 1.25.2            
+          registry: '{{ monitoring_container_repo }}'       
         imagePullPolicy: IfNotPresent
         resources: {}
         # limits:
