@@ -282,7 +282,7 @@ controller:
 
   ## Enable the custom resources.
   enableCustomResources: true
-
+  
   ## Enable OIDC policies.
   enableOIDC: false
 

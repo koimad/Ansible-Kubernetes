@@ -1,4 +1,6 @@
 ---
+- include_tasks: crds.yml
+
 - name: Add nginx-ingress chart repo
   kubernetes.core.helm_repository:
     name: helm-local
@@ -29,8 +31,13 @@
           entries: {            
               client-max-body-size: '500m'
           }
+        ingressClass:
+          setAsDefaultIngress: true
+
+        enableCustomResources: true
+      
       prometheus:       
-        create: false        
+        create: true        
         port: 9113
         scheme: http
 

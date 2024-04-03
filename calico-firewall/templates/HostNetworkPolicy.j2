@@ -34,7 +34,7 @@ kind: GlobalNetworkPolicy
 metadata:
   name: allow-web-https-ingress
 spec:
-  order: 10
+  order: 12
   preDNAT: true
   applyOnForward: true
   ingress:
@@ -50,23 +50,9 @@ spec:
 apiVersion: projectcalico.org/v3
 kind: GlobalNetworkPolicy
 metadata:
-  name: drop-all-other-other-ingress
-spec:
-  order: 1000
-  preDNAT: true
-  applyOnForward: true
-  ingress:    
-    - action: Deny    
-  selector: has(worker-endpoint) || has(control-endpoint)
-
----
-apiVersion: projectcalico.org/v3
-kind: GlobalNetworkPolicy
-metadata:
   name: allow-web-ports-and-dns
 spec:
-  order: 12
-    #applyOnForward: true  
+  order: 13
   egress:
     - action: Allow
       protocol: TCP
@@ -84,8 +70,7 @@ kind: GlobalNetworkPolicy
 metadata:
   name: allow-docker-repo
 spec:
-  order: 12
-    #applyOnForward: true  
+  order: 14
   egress:
     - action: Allow
       protocol: TCP
@@ -99,7 +84,7 @@ kind: GlobalNetworkPolicy
 metadata:
   name: allow-ssh
 spec:
-  order: 13    
+  order: 15
   egress:
     - action: Allow
       protocol: TCP
@@ -118,7 +103,7 @@ kind: GlobalNetworkPolicy
 metadata:
   name: allow-exec-it
 spec:
-  order: 11
+  order: 16
   preDNAT: true
   applyOnForward: true
   ingress:
@@ -131,3 +116,184 @@ spec:
         selector: 'has(control-endpoint)'
 
   selector: has(worker-endpoint) || has(control-endpoint)
+
+
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: allow-nfs-ingress
+spec:
+  order: 17
+  preDNAT: true
+  applyOnForward: true
+  ingress:
+    - action: Allow
+      protocol: TCP
+      destination:
+        selector: 'has(control-endpoint)' 
+        ports: [2049]
+      source:
+        selector: 'has(worker-endpoint) || has(control-endpoint)'
+    - action: Allow
+      protocol: UDP
+      destination:
+        selector: 'has(control-endpoint)' 
+        ports: [2049]
+      source:
+        selector: 'has(worker-endpoint) || has(control-endpoint)'
+
+  selector: has(worker-endpoint) || has(control-endpoint)
+
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: allow-nfs-egress
+spec:
+  order: 18  
+  egress:
+    - action: Allow
+      protocol: TCP
+      destination:
+        selector: 'has(control-endpoint)' 
+        ports: [2049]
+      source:
+        selector: 'has(worker-endpoint) || has(control-endpoint)'
+    - action:  Allow
+      protocol: UDP
+      destination:
+        selector: 'has(control-endpoint)' 
+        ports: [2049]
+      source:
+        selector: 'has(worker-endpoint) || has(control-endpoint)'        
+  selector: has(worker-endpoint) || has(control-endpoint)
+
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: allow-7946-ingress
+spec:
+  order: 19
+  preDNAT: true
+  applyOnForward: true
+  ingress:
+    - action: Allow
+      protocol: TCP
+      destination: 
+        selector: 'has(worker-endpoint) || has(control-endpoint)'
+        ports: [7946]
+      source:
+        selector: 'has(worker-endpoint) || has(control-endpoint)' 
+    - action: Allow
+      protocol: UDP
+      destination: 
+        selector: 'has(worker-endpoint) || has(control-endpoint)'
+        ports: [7946]
+      source:
+        selector: 'has(worker-endpoint) || has(control-endpoint)' 
+
+  selector: has(worker-endpoint) || has(control-endpoint)
+
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: allow-7946-egress
+spec:
+  order: 20  
+  egress:
+    - action: Allow
+      protocol: TCP
+      destination: 
+        selector: 'has(worker-endpoint) || has(control-endpoint)'
+        ports: [7946]
+      source:
+        selector: 'has(worker-endpoint) || has(control-endpoint)' 
+    - action: Allow
+      protocol: UDP
+      destination: 
+        selector: 'has(worker-endpoint) || has(control-endpoint)'
+        ports: [7946]
+      source:
+        selector: 'has(worker-endpoint) || has(control-endpoint)'         
+  selector: has(worker-endpoint) || has(control-endpoint)
+
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: allow-prometheus-ingress
+spec:
+  order: 21
+  preDNAT: true
+  applyOnForward: true
+  ingress:
+    - action: Allow
+      protocol: TCP
+      destination: 
+        selector: 'has(worker-endpoint) || has(control-endpoint)'
+        ports: [9100]
+      source:
+        selector: 'has(worker-endpoint) || has(control-endpoint)' 
+    - action: Allow
+      protocol: UDP
+      destination: 
+        selector: 'has(worker-endpoint) || has(control-endpoint)'
+        ports: [9100]
+      source:
+        selector: 'has(worker-endpoint) || has(control-endpoint)' 
+
+  selector: has(worker-endpoint) || has(control-endpoint)
+
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: allow-prometheus-egress
+spec:
+  order: 22  
+  egress:
+    - action: Allow
+      protocol: TCP
+      destination: 
+        selector: 'has(worker-endpoint) || has(control-endpoint)'
+        ports: [9100]
+      source:
+        selector: 'has(worker-endpoint) || has(control-endpoint)' 
+    - action: Allow
+      protocol: UDP
+      destination: 
+        selector: 'has(worker-endpoint) || has(control-endpoint)'
+        ports: [9100]
+      source:
+        selector: 'has(worker-endpoint) || has(control-endpoint)'         
+  selector: has(worker-endpoint) || has(control-endpoint)
+
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: drop-all-other-other-ingress
+spec:
+  order: 1000
+  preDNAT: true
+  applyOnForward: true
+  ingress:  
+    - action: Log  
+    - action: Deny    
+  selector: has(worker-endpoint) || has(control-endpoint)
+
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: drop-all-other-other-egress
+spec:
+  order: 1001    
+  egress:  
+    - action: Log  
+    - action: Deny    
+  selector: has(worker-endpoint) || has(control-endpoint)
+

@@ -48,8 +48,7 @@
             readOnly: true  
         ingress:
           enabled: true  
-          annotations: 
-            kubernetes.io/ingress.class: nginx
+          ingressClassName: nginx
           hosts:
             - '{{ monitoring_prometheus_host }}'
           tls:                   

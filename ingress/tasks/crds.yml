@@ -1,0 +1,6 @@
+---
+- name: Create Custom ingress CRDs for controller version 3.5.0
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('file', 'crds-definition.yml') | from_yaml_all }}"
+      
