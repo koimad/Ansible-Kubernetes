@@ -28,7 +28,7 @@
           enabled: true
           image:
             repository: '{{ metallb_container_repo }}/frrouting/frr'
-            #tag: latest            
+            tag: 9.0.2
           metricsPort: 7473
           resources: {}  
 
