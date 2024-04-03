@@ -111,3 +111,23 @@ spec:
       destination:
         ports: [22]
   selector: has(worker-endpoint) || has(control-endpoint)
+
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: allow-exec-it
+spec:
+  order: 11
+  preDNAT: true
+  applyOnForward: true
+  ingress:
+    - action: Allow
+      protocol: TCP
+      destination:
+        selector: 'has(worker-endpoint) || has(control-endpoint)'
+        ports: [10250]
+      source:
+        selector: 'has(control-endpoint)'
+
+  selector: has(worker-endpoint) || has(control-endpoint)

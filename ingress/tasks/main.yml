@@ -18,7 +18,7 @@
       controller:        
         image:
           repository: '{{ local_container_repo }}/nginx/nginx-ingress'
-          tag: "3.3.2"
+          tag: "3.5.0"
         pod:
           annotations:
             prometheus.io/scrape: "true"
@@ -30,7 +30,7 @@
               client-max-body-size: '500m'
           }
       prometheus:       
-        create: true        
+        create: false        
         port: 9113
         scheme: http
 
