@@ -6,25 +6,84 @@
     repo_url: '{{ nfs_subdir_helm_repository }}'
     state: present
 
-- name: NFS Subdirectory External Provisioner
-  kubernetes.core.helm:
+# - name: NFS Subdirectory External Provisioner
+#   kubernetes.core.helm:
+#     name: nfs-storage
+#     binary_path: /usr/local/bin/helm
+#     chart_ref: helm-local/nfs-subdir-external-provisioner
+#     create_namespace: true
+#     release_namespace: storage
+#     wait: true
+#     values: 
+#       image: 
+#         repository: '{{ nfs_subdir_container_repo }}/sig-storage/nfs-subdir-external-provisioner'
+#         tag: 'v4.0.2'
+#       nfs:
+#         server: '{{ nfs_subdir_nfs_server }}'
+#         path:  '{{ nfs_subdir_nfs_path}}' 
+#       storageClass:
+#         reclaimPolicy: Retain
+#         archiveOnDelete: false
+#         pathPattern: '${.PVC.annotations.nfs.io/storage-path}'
+#         #pathPattern: '${.PVC.namespace}-${.PVC.name}/${.PVC.annotations.nfs.io/storage-path}'
+#         accessModes: ReadWriteMany
+#         volumeBindingMode: Immediate
+
+
+- name : csi-driver-nfs
+  kubernetes.core.helm:        
     name: nfs-storage
     binary_path: /usr/local/bin/helm
-    chart_ref: helm-local/nfs-subdir-external-provisioner
+    chart_ref: helm-local/csi-driver-nfs
     create_namespace: true
     release_namespace: storage
     wait: true
     values: 
-      image: 
-        repository: '{{ nfs_subdir_container_repo }}/sig-storage/nfs-subdir-external-provisioner'
-        tag: 'v4.0.2'
-      nfs:
-        server: '{{ nfs_subdir_nfs_server }}'
-        path:  '{{ nfs_subdir_nfs_path}}' 
+      image:
+        baseRepo: registry.k8s.io
+        nfs:
+          repository: '{{ nfs_subdir_container_repo }}/sig-storage/nfsplugin'
+          tag: v4.10.0
+          pullPolicy: IfNotPresent
+        csiProvisioner:
+          repository: '{{ nfs_subdir_container_repo }}/sig-storage/csi-provisioner'
+          tag: v5.2.0
+          pullPolicy: IfNotPresent
+        csiResizer:
+          repository: '{{ nfs_subdir_container_repo }}/sig-storage/csi-resizer'
+          tag: v1.13.1
+          pullPolicy: IfNotPresent
+        csiSnapshotter:
+          repository: '{{ nfs_subdir_container_repo }}/sig-storage/csi-snapshotter'
+          tag: v8.2.0
+          pullPolicy: IfNotPresent
+        livenessProbe:
+          repository: '{{ nfs_subdir_container_repo }}/sig-storage/livenessprobe'
+          tag: v2.15.0
+          pullPolicy: IfNotPresent
+        nodeDriverRegistrar:
+          repository: '{{ nfs_subdir_container_repo }}/sig-storage/csi-node-driver-registrar'
+          tag: v2.13.0
+          pullPolicy: IfNotPresent
+        externalSnapshotter:
+          repository: '{{ nfs_subdir_container_repo }}/sig-storage/snapshot-controller'
+          tag: v8.2.0
+          pullPolicy: IfNotPresent
+
       storageClass:
-        reclaimPolicy: Retain
-        archiveOnDelete: false
-        pathPattern: '${.PVC.annotations.nfs.io/storage-path}'
-        #pathPattern: '${.PVC.namespace}-${.PVC.name}/${.PVC.annotations.nfs.io/storage-path}'
-        accessModes: ReadWriteMany
+        create: true
+        name: nfs-csi
+        annotations:
+          storageclass.kubernetes.io/is-default-class: "false"
+        parameters:
+          server: '{{ nfs_subdir_nfs_server }}'
+          share: '{{ nfs_subdir_nfs_path}}' 
+          #subDir: 
+          mountPermissions: "0"
+          #csi.storage.k8s.io/provisioner-secret is only needed for providing mountOptions in DeleteVolume
+          #csi.storage.k8s.io/provisioner-secret-name: "mount-options"
+          #csi.storage.k8s.io/provisioner-secret-namespace: "default"
+        reclaimPolicy: Delete
         volumeBindingMode: Immediate
+        mountOptions:
+          - nfsvers=4.1
